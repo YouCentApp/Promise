@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promise.Native", "Promise.N
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promise.Web", "Promise.Web\Promise.Web.csproj", "{985499BD-209B-46F8-9D97-39DD5C58A700}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promise.Comp", "Promise.Components\Promise.Comp.csproj", "{83A37629-941F-44BB-8D81-F51B4D785002}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promise.Comp", "Promise.Comp\Promise.Comp.csproj", "{83A37629-941F-44BB-8D81-F51B4D785002}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Promise.Lib", "Promise.Lib\Promise.Lib.csproj", "{A2DD7608-793E-46E8-8D0A-5DE5F1E0E5DA}"
 EndProject
