@@ -66,7 +66,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Promise.Components\Promise.Comp.csproj" />
+      <ProjectReference Include="..\Promise.Comp\Promise.Comp.csproj" />
     </ItemGroup>
 
 </Project>
