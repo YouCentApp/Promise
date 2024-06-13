@@ -8,17 +8,17 @@ html, body {
 }
 
 a, .btn-link {
-    color: #006bb7;
+    color: #95C11F;
 }
 
 .btn-primary {
     color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    background-color: #3AAA35;
+    border-color: #D3D800;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #3AAA35;
 }
 
 .content {
@@ -30,19 +30,19 @@ h1:focus {
 }
 
 .valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
+    outline: 1px solid #D3D800;
 }
 
 .invalid {
-    outline: 1px solid #e50000;
+    outline: 1px solid #FDC300;
 }
 
 .validation-message {
-    color: #e50000;
+    color: #FDC300;
 }
 
 #blazor-error-ui {
-    background: lightyellow;
+    background: #D3D800;
     bottom: 0;
     box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
     display: none;
@@ -80,7 +80,7 @@ h1:focus {
         position: sticky;
         top: 0;
         height: env(safe-area-inset-top);
-        background-color: #f7f7f7;
+        background-color: #D3D800;
         width: 100%;
         z-index: 1;
     }
