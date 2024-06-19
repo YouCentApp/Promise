@@ -73,7 +73,8 @@ app.MapPost("/signin", async (HttpContext context) =>
         { Security.PayLoadFieldAuth, true },
         { Security.PayLoadFieldExp, DateTime.Now.AddHours(1) }
     };
-    var token = Security.CreateBearerJwt(payload, "!!!!!!!!!secret!!!!!!!!!!!!!!");
+    var secret = configuration["Jwt:Secret"];
+    var token = Security.CreateBearerJwt(payload, secret);
     context.Response.Headers.TryAdd(Security.AuthorizationHttpHeader, token);
     return Results.Ok();
 })
