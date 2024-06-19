@@ -13,12 +13,7 @@ public static class Security
     public const string PayLoadFieldLogin = "login";
     public const string PayLoadFieldAuth = "auth";
     public const string PayLoadFieldExp = "exp";
-    public const string PayLoadFieldSalt = "salt";
-    public const string PayLoadFieldCents = "Cents";
-    public const string PayLoadFieldSenderLogin = "SenderLogin";
-    public const string PayLoadFieldReceiverLogin = "ReceiverLogin";
-    public const string PayLoadFieldNewPasswordHash = "NewPasswordHash";
-    private const string BearerTokenPrefix = "Bearer ";
+    private const string bearerTokenPrefix = "Bearer ";
     private const int saltLengthLimit = 20; // 20 Bytes! (less than 32 characters after Base64 conversion)
 
     public static string GetHash(string input)
@@ -37,13 +32,13 @@ public static class Security
         IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
         IJwtEncoder encoder = new JwtEncoder(algorithm, serializer, urlEncoder);
         var token = encoder.Encode(payload, secret);
-        return BearerTokenPrefix + token;
+        return bearerTokenPrefix + token;
     }
 
     public static bool ValidateBearerJwtPrefix(string bearerJwt)
     {
         if (bearerJwt is null) return false;
-        return bearerJwt.LastIndexOf(BearerTokenPrefix, StringComparison.Ordinal) == 0;
+        return bearerJwt.LastIndexOf(bearerTokenPrefix, StringComparison.Ordinal) == 0;
     }
 
     public static IDictionary<string, object> GetBearerJwtLoad(string bearerJwt, string secret, bool verify = true)
@@ -98,7 +93,7 @@ public static class Security
 
     private static string GetJwtFromBearerJwt(string bearerJwt)
     {
-        return bearerJwt.Substring(BearerTokenPrefix.Length);
+        return bearerJwt.Substring(bearerTokenPrefix.Length);
     }
 
     private static string GetCryptoHash(HashAlgorithm crypto, string input)
