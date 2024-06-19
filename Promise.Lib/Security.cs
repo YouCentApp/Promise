@@ -13,6 +13,8 @@ public static class Security
     public const string PayLoadFieldLogin = "login";
     public const string PayLoadFieldAuth = "auth";
     public const string PayLoadFieldExp = "exp";
+    public const int AccessTokenLifetimeHours = 24;
+
     private const string bearerTokenPrefix = "Bearer ";
     private const int saltLengthLimit = 20; // 20 Bytes! (less than 32 characters after Base64 conversion)
 
