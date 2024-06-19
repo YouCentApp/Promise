@@ -25,10 +25,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
-app.MapGet("/users", async (YCDBContext context) =>
+app.MapGet("/minversup", () =>
 {
-    var users = await context.Users.ToArrayAsync();
-    return users;
+    return new { major = 2, minor = 0, build = 0 };
 })
 .WithOpenApi();
 
