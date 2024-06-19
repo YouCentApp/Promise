@@ -84,6 +84,20 @@ public class YCDBContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Currency>().HasKey(c => c.Id);
+        modelBuilder.Entity<Language>().HasKey(l => l.Id);
+        modelBuilder.Entity<User>().HasKey(u => u.Id);
+        modelBuilder.Entity<Balance>().HasKey(b => b.UserId);
+        modelBuilder.Entity<PromiseLimit>().HasKey(pl => pl.UserId);
+        modelBuilder.Entity<PromiseTransaction>().HasKey(pt => pt.Id);
+        modelBuilder.Entity<Rate>().HasKey(r => r.CurrencyId);
+        modelBuilder.Entity<UserSetting>().HasKey(us => us.UserId);
+
+        modelBuilder.Entity<PromiseLimit>()
+            .HasOne<User>()
+            .WithOne()
+            .HasForeignKey<PromiseLimit>(pl => pl.UserId);
+
         modelBuilder.Entity<Balance>()
             .HasOne<User>()
             .WithOne()
