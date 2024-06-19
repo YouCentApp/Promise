@@ -57,7 +57,7 @@ app.MapPost("/signin", async (HttpContext context) =>
         user.Login.Length < 1 || user.Password.Length < 1)
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
-        return Results.Json(new { auth = false, error = "No data provided" });
+        return Results.Json(new { auth = false, error = "No data or wrong data provided" });
     }
     var dbUser = db.Users.FirstOrDefault(u => u.Login == user.Login);
     if (dbUser is null)
@@ -103,16 +103,16 @@ app.MapPost("/signup", async (HttpContext context) =>
         return Results.Json(new { auth = false, error = "Server error..." });
     }
     if (user is null || user.Login is null || user.Password is null ||
-        user.Login.Length < 1 || user.Password.Length < 1)
+        user.Login.Length < 5 || user.Password.Length < 8)
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
-        return Results.Json(new { auth = false, error = "No data provided" });
+        return Results.Json(new { auth = false, error = "No data or wrong data provided" });
     }
     var dbUser = db.Users.FirstOrDefault(u => u.Login == user.Login);
     if (dbUser != null)
     {
         context.Response.StatusCode = StatusCodes.Status409Conflict;
-        return Results.Json(new { auth = false, error = "User already exists" });
+        return Results.Json(new { auth = false, error = "Username already exists, sorry..." });
     }
     var salt = Security.GetSalt();
     var newUser = new User
@@ -126,7 +126,7 @@ app.MapPost("/signup", async (HttpContext context) =>
     await db.SaveChangesAsync();
     return Results.Ok();
 })
-.Accepts<User>("application/json", "User Login")
+.Accepts<User>("application/json", "User Registration")
 .WithOpenApi();
 
 
