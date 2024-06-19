@@ -53,7 +53,12 @@ app.MapPost("/signin", async (HttpContext context) =>
         MainLogger.LogError("Error reading user from signin request : " + ex);
         return Results.Json(new { auth = false, error = "Server error..." });
     }
-    if (user is null)
+    if (user is null || user.Login is null || user.Password is null ||
+        user.Login.Length < 1 || user.Password.Length < 1)
+    {
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        return Results.Json(new { auth = false, error = "No data provided" });
+    }
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
         return Results.Json(new { auth = false, error = "No data provided" });
@@ -71,7 +76,7 @@ app.MapPost("/signin", async (HttpContext context) =>
     {
         { Security.PayLoadFieldLogin, user.Login },
         { Security.PayLoadFieldAuth, true },
-        { Security.PayLoadFieldExp, DateTime.Now.AddHours(1) }
+        { Security.PayLoadFieldExp, DateTime.Now.AddHours(24) }
     };
     var secret = configuration["Jwt:Secret"];
     var token = Security.CreateBearerJwt(payload, secret);
