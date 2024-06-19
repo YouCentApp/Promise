@@ -29,7 +29,7 @@ app.UseHttpsRedirection();
 
 
 
-
+// Check if the version of the APP is supported
 app.MapGet("/minversup", () =>
 {
     return new { major = 2, minor = 0, build = 0 };
@@ -38,7 +38,7 @@ app.MapGet("/minversup", () =>
 
 
 
-
+// Signin endpoint
 app.MapPost("/signin", async (HttpContext context) =>
 {
     using var db = context.RequestServices.GetRequiredService<YCDBContext>();
@@ -55,10 +55,6 @@ app.MapPost("/signin", async (HttpContext context) =>
     }
     if (user is null || user.Login is null || user.Password is null ||
         user.Login.Length < 1 || user.Password.Length < 1)
-    {
-        context.Response.StatusCode = StatusCodes.Status400BadRequest;
-        return Results.Json(new { auth = false, error = "No data provided" });
-    }
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
         return Results.Json(new { auth = false, error = "No data provided" });
@@ -87,6 +83,51 @@ app.MapPost("/signin", async (HttpContext context) =>
 .WithOpenApi();
 
 
+
+
+
+
+// Signup endpoint
+app.MapPost("/signup", async (HttpContext context) =>
+{
+    using var db = context.RequestServices.GetRequiredService<YCDBContext>();
+    User? user = null;
+    try
+    {
+        user = await context.Request.ReadFromJsonAsync<User>();
+    }
+    catch (Exception ex)
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        MainLogger.LogError("Error reading user from signup request : " + ex);
+        return Results.Json(new { auth = false, error = "Server error..." });
+    }
+    if (user is null || user.Login is null || user.Password is null ||
+        user.Login.Length < 1 || user.Password.Length < 1)
+    {
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        return Results.Json(new { auth = false, error = "No data provided" });
+    }
+    var dbUser = db.Users.FirstOrDefault(u => u.Login == user.Login);
+    if (dbUser != null)
+    {
+        context.Response.StatusCode = StatusCodes.Status409Conflict;
+        return Results.Json(new { auth = false, error = "User already exists" });
+    }
+    var salt = Security.GetSalt();
+    var newUser = new User
+    {
+        Login = user.Login,
+        Password = Security.GetPasswordHash(user.Password, salt),
+        Salt = salt,
+        CreationDate = DateTime.Now
+    };
+    db.Users.Add(newUser);
+    await db.SaveChangesAsync();
+    return Results.Ok();
+})
+.Accepts<User>("application/json", "User Login")
+.WithOpenApi();
 
 
 app.Run();
