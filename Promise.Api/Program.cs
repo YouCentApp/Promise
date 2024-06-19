@@ -77,7 +77,8 @@ app.MapPost("/signin", async (HttpContext context) =>
     var secret = configuration["Jwt:Secret"];
     var token = Security.CreateBearerJwt(payload, secret);
     context.Response.Headers.TryAdd(Security.AuthorizationHttpHeader, token);
-    return Results.Ok();
+    context.Response.StatusCode = StatusCodes.Status202Accepted;
+    return Results.Json(new { auth = true, error = "" }); ;
 })
 .Accepts<User>("application/json", "User Login")
 .WithOpenApi();
@@ -124,7 +125,8 @@ app.MapPost("/signup", async (HttpContext context) =>
     };
     db.Users.Add(newUser);
     await db.SaveChangesAsync();
-    return Results.Ok();
+    context.Response.StatusCode = StatusCodes.Status202Accepted;
+    return Results.Json(new { auth = true, error = "" });
 })
 .Accepts<User>("application/json", "User Registration")
 .WithOpenApi();
