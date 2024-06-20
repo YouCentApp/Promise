@@ -163,31 +163,31 @@ CREATE TABLE UserSettings
 
 -- PersonalData definition
 
-CREATE TABLE [dbo].[UserSettings]
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PersonalData]
 (
     [UserId] [bigint] NOT NULL,
-    [LanguageId] [int] NOT NULL,
-    [CurrencyId] [tinyint] NOT NULL,
-    [IsDarkTheme] [bit] NOT NULL
+    [Email] [nvarchar](150) NOT NULL,
+    [Tel] [nvarchar](20) NOT NULL,
+    [Secret] [nvarchar](50) NOT NULL,
+    [EmailHash] [nvarchar](64) NOT NULL,
+    [TelHash] [nvarchar](64) NOT NULL,
+    [SecretHash] [nvarchar](64) NOT NULL,
+    [Salt] [nvarchar](32) NOT NULL,
+    [EmailMasked] [nvarchar](150) NOT NULL,
+    [TelMasked] [nvarchar](20) NOT NULL
 ) ON [PRIMARY]
 GO
-ALTER TABLE [dbo].[UserSettings] ADD  CONSTRAINT [PK_UserSettings_UserId] PRIMARY KEY CLUSTERED 
+ALTER TABLE [dbo].[PersonalData] ADD  CONSTRAINT [PK_PersonalData_UserId] PRIMARY KEY CLUSTERED 
 (
 	[UserId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
-ALTER TABLE [dbo].[UserSettings]  WITH CHECK ADD  CONSTRAINT [FK_UserSettings_CurrencyId_Currencies_Id] FOREIGN KEY([CurrencyId])
-REFERENCES [dbo].[Currencies] ([Id])
-GO
-ALTER TABLE [dbo].[UserSettings] CHECK CONSTRAINT [FK_UserSettings_CurrencyId_Currencies_Id]
-GO
-ALTER TABLE [dbo].[UserSettings]  WITH CHECK ADD  CONSTRAINT [FK_UserSettings_LanguageId_Languages_Id] FOREIGN KEY([LanguageId])
-REFERENCES [dbo].[Languages] ([Id])
-GO
-ALTER TABLE [dbo].[UserSettings] CHECK CONSTRAINT [FK_UserSettings_LanguageId_Languages_Id]
-GO
-ALTER TABLE [dbo].[UserSettings]  WITH CHECK ADD  CONSTRAINT [FK_UserSettings_UserId_Users_Id] FOREIGN KEY([UserId])
+ALTER TABLE [dbo].[PersonalData]  WITH CHECK ADD  CONSTRAINT [FK_PersonalData_UserId_Users_Id] FOREIGN KEY([UserId])
 REFERENCES [dbo].[Users] ([Id])
 GO
-ALTER TABLE [dbo].[UserSettings] CHECK CONSTRAINT [FK_UserSettings_UserId_Users_Id]
+ALTER TABLE [dbo].[PersonalData] CHECK CONSTRAINT [FK_PersonalData_UserId_Users_Id]
 GO
