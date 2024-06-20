@@ -4,6 +4,7 @@ using JWT.Algorithms;
 using JWT;
 using JWT.Exceptions;
 using JWT.Serializers;
+using Promise.Lib;
 
 namespace Promise.Api;
 

@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Promise.Lib\Promise.Lib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Documents/" />
+  </ItemGroup>
+
 </Project>

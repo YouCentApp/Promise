@@ -1,7 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using Promise.Api;
 using Promise.Lib;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,7 +40,7 @@ builder.Services.AddSwaggerGen(options =>
 // Add DbContext to the DI container
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<YCDBContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<PromiseDb>(options => options.UseSqlServer(connectionString));
 
 var app = builder.Build();
 
@@ -75,7 +75,7 @@ app.MapGet("/minversup", () =>
 // Signin endpoint
 app.MapPost("/signin", async (HttpContext context) =>
 {
-    using var db = context.RequestServices.GetRequiredService<YCDBContext>();
+    using var db = context.RequestServices.GetRequiredService<PromiseDb>();
     User? user = null;
     try
     {
@@ -138,7 +138,7 @@ app.MapPost("/signin", async (HttpContext context) =>
 // Signup endpoint
 app.MapPost("/signup", async (HttpContext context) =>
 {
-    using var db = context.RequestServices.GetRequiredService<YCDBContext>();
+    using var db = context.RequestServices.GetRequiredService<PromiseDb>();
     User? user = null;
     try
     {
@@ -233,7 +233,7 @@ app.MapPost("/signup", async (HttpContext context) =>
 // Userinfo endpoint
 app.MapPost("/userinfo", async (HttpContext context) =>
 {
-    using var db = context.RequestServices.GetRequiredService<YCDBContext>();
+    using var db = context.RequestServices.GetRequiredService<PromiseDb>();
     var jwt = context.Request.Headers[Security.AuthorizationHttpHeader].ToString();
     if (jwt.Length < 1)
     {
