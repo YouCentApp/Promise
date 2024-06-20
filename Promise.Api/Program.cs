@@ -129,7 +129,7 @@ app.MapPost("/signin", async (HttpContext context) =>
         login = dbUser.Login
     });
 })
-.Accepts<User>("application/json", "User Login")
+.Accepts<User>("application/json", string.Empty)
 .WithOpenApi();
 
 
@@ -230,7 +230,7 @@ app.MapPost("/signup", async (HttpContext context) =>
         login = dbUser.Login
     });
 })
-.Accepts<User>("application/json", "User Registration")
+.Accepts<User>("application/json", string.Empty)
 .WithOpenApi();
 
 
@@ -314,7 +314,7 @@ app.MapPost("/userinfo", async (HttpContext context) =>
         limit = limit.Cents
     });
 })
-.Accepts<User>("application/json", "User Info")
+.Accepts<User>("application/json", string.Empty)
 .WithOpenApi();
 
 
@@ -343,26 +343,23 @@ app.MapPost("/dataupdate", async (HttpContext context) =>
         return Results.Json(new { success = false, error = "Server error..." });
     }
 
-    if (userData is null || userData.User is null || userData.User.Id < 1 ||
-        string.IsNullOrWhiteSpace(userData.User.Login) ||
-        string.IsNullOrWhiteSpace(userData.User.Password))
+    var user = userData?.User;
+    if (userData is null || user is null || user.Id < 1 ||
+        string.IsNullOrWhiteSpace(user.Login) ||
+        string.IsNullOrWhiteSpace(user.Password))
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
         MainLogger.LogError("Error reading user from user data update request");
         return Results.Json(new { success = false, error = "No data or wrong data provided for User" });
     }
-    var user = userData.User;
 
-    if (userData.PersonalData is null ||
-        userData.PersonalData.Email is null ||
-        userData.PersonalData.Tel is null ||
-        userData.PersonalData.Secret is null)
+    var personalData = userData.PersonalData;
+    if (personalData is null)
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
         MainLogger.LogError("Error reading personal data from personal data update request");
         return Results.Json(new { success = false, error = "No data or wrong data provided for PersonalData" });
     }
-    var personalData = userData.PersonalData;
 
     var dbUser = await db.Users.FirstOrDefaultAsync(u => u.Login == user.Login);
     if (dbUser is null || dbUser.Password is null || dbUser.Salt is null || dbUser.Id != user.Id)
@@ -395,15 +392,15 @@ app.MapPost("/dataupdate", async (HttpContext context) =>
         };
         db.PersonalData.Add(dbPersonalData);
     }
-    if (personalData.Email.Length > 0)
+    if (personalData.Email is not null)
     {
         dbPersonalData.Email = personalData.Email;
     }
-    if (personalData.Tel.Length > 0)
+    if (personalData.Tel is not null)
     {
         dbPersonalData.Tel = personalData.Tel;
     }
-    if (personalData.Secret.Length > 0)
+    if (personalData.Secret is not null)
     {
         dbPersonalData.Secret = personalData.Secret;
     }
@@ -421,7 +418,7 @@ app.MapPost("/dataupdate", async (HttpContext context) =>
         error = ""
     });
 })
-.Accepts<UserData>("application/json", "User and Personal Data")
+.Accepts<UserData>("application/json", string.Empty)
 .WithOpenApi();
 
 
