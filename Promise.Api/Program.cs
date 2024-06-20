@@ -129,7 +129,7 @@ app.MapPost("/signin", async (HttpContext context) =>
         login = dbUser.Login
     });
 })
-.Accepts<User>("application/json", string.Empty)
+.Accepts<User>("application/json", "User data for Sign In")
 .WithOpenApi();
 
 
@@ -230,7 +230,7 @@ app.MapPost("/signup", async (HttpContext context) =>
         login = dbUser.Login
     });
 })
-.Accepts<User>("application/json", string.Empty)
+.Accepts<User>("application/json", "User data for Sign Up")
 .WithOpenApi();
 
 
@@ -314,7 +314,7 @@ app.MapPost("/userinfo", async (HttpContext context) =>
         limit = limit.Cents
     });
 })
-.Accepts<User>("application/json", string.Empty)
+.Accepts<User>("application/json", "User data for User Info")
 .WithOpenApi();
 
 
@@ -418,7 +418,7 @@ app.MapPost("/dataupdate", async (HttpContext context) =>
         error = ""
     });
 })
-.Accepts<UserData>("application/json", string.Empty)
+.Accepts<UserData>("application/json", "User data for Data Update")
 .WithOpenApi();
 
 
