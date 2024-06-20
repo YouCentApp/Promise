@@ -51,34 +51,43 @@ app.MapPost("/signin", async (HttpContext context) =>
     {
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
         MainLogger.LogError("Error reading user from signin request : " + ex);
-        return Results.Json(new { auth = false, error = "Server error..." });
+        return Results.Json(new { success = false, error = "Server error..." });
     }
     if (user is null || user.Login is null || user.Password is null ||
         user.Login.Length < 1 || user.Password.Length < 1)
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
-        return Results.Json(new { auth = false, error = "No data or wrong data provided" });
+        return Results.Json(new { success = false, error = "No data or wrong data provided" });
     }
     var dbUser = db.Users.FirstOrDefault(u => u.Login == user.Login);
     if (dbUser is null)
     {
         context.Response.StatusCode = StatusCodes.Status404NotFound;
-        return Results.Json(new { auth = false, error = "User not found" });
+        return Results.Json(new { success = false, error = "User not found" });
     }
     var hash = Security.GetHash(Security.GetHash(user.Password) + dbUser.Salt);
-    if (hash != dbUser.Password) return Results.Json(new { auth = false, error = "Wrong password!" });
-
+    if (hash != dbUser.Password)
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return Results.Json(new { auth = false, error = "Wrong password!" });
+    }
+    var secret = configuration["Jwt:Secret"];
+    if (secret is null)
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        MainLogger.LogError("No secret provided for JWT");
+        return Results.Json(new { success = false, error = "Server error..." });
+    }
     var payload = new Dictionary<string, object>
     {
         { Security.PayLoadFieldLogin, user.Login },
         { Security.PayLoadFieldAuth, true },
         { Security.PayLoadFieldExp, DateTime.Now.AddHours(Security.AccessTokenLifetimeHours) }
     };
-    var secret = configuration["Jwt:Secret"];
     var token = Security.CreateBearerJwt(payload, secret);
     context.Response.Headers.TryAdd(Security.AuthorizationHttpHeader, token);
     context.Response.StatusCode = StatusCodes.Status202Accepted;
-    return Results.Json(new { auth = true, error = "" }); ;
+    return Results.Json(new { success = true, error = "" }); ;
 })
 .Accepts<User>("application/json", "User Login")
 .WithOpenApi();
@@ -101,19 +110,19 @@ app.MapPost("/signup", async (HttpContext context) =>
     {
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
         MainLogger.LogError("Error reading user from signup request : " + ex);
-        return Results.Json(new { auth = false, error = "Server error..." });
+        return Results.Json(new { success = false, error = "Server error..." });
     }
     if (user is null || user.Login is null || user.Password is null ||
         user.Login.Length < 5 || user.Password.Length < 8)
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
-        return Results.Json(new { auth = false, error = "No data or wrong data provided" });
+        return Results.Json(new { success = false, error = "No data or wrong data provided" });
     }
     var dbUser = db.Users.FirstOrDefault(u => u.Login == user.Login);
     if (dbUser != null)
     {
         context.Response.StatusCode = StatusCodes.Status409Conflict;
-        return Results.Json(new { auth = false, error = "Username already exists, sorry..." });
+        return Results.Json(new { success = false, error = "Username already exists, sorry..." });
     }
     var salt = Security.GetSalt();
     var newUser = new User
@@ -126,11 +135,100 @@ app.MapPost("/signup", async (HttpContext context) =>
     db.Users.Add(newUser);
     await db.SaveChangesAsync();
     context.Response.StatusCode = StatusCodes.Status202Accepted;
-    return Results.Json(new { auth = true, error = "" });
+    return Results.Json(new { success = true, error = "" });
 })
 .Accepts<User>("application/json", "User Registration")
 .WithOpenApi();
 
+
+
+
+
+
+
+// Userinfo endpoint
+app.MapPost("/userinfo", async (HttpContext context) =>
+{
+    using var db = context.RequestServices.GetRequiredService<YCDBContext>();
+    var jwt = context.Request.Headers[Security.AuthorizationHttpHeader].ToString();
+    if (jwt.Length < 1)
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return Results.Json(new { success = false, error = "No token provided" });
+    }
+
+    User? user = null;
+    try
+    {
+        user = await context.Request.ReadFromJsonAsync<User>();
+    }
+    catch (Exception ex)
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        MainLogger.LogError("Error reading user from signin request : " + ex);
+        return Results.Json(new { success = false, error = "Server error..." });
+    }
+    if (user is null || user.Login is null || user.Password is null ||
+        user.Login.Length < 1 || user.Password.Length < 1)
+    {
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        return Results.Json(new { success = false, error = "No data or wrong data provided" });
+    }
+
+    var secret = configuration["Jwt:Secret"];
+    if (secret is null)
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        MainLogger.LogError("No secret provided for JWT");
+        return Results.Json(new { success = false, error = "Server error..." });
+    }
+    if (!Security.ValidateBearerAccessToken(jwt, secret, user.Login))
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return Results.Json(new { success = false, error = "Invalid token" });
+    }
+
+    var dbUser = await db.Users.FirstOrDefaultAsync(u => u.Login == user.Login);
+    if (dbUser is null)
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        return Results.Json(new { success = false, error = "User not found" });
+    }
+    var balance = await db.Balances.FirstOrDefaultAsync(b => b.UserId == dbUser.Id);
+    if (balance is null)
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        return Results.Json(new { success = false, error = "Balance not found" });
+    }
+    var limit = await db.PromiseLimits.FirstOrDefaultAsync(l => l.UserId == dbUser.Id);
+    if (limit is null)
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        return Results.Json(new { success = false, error = "Promise limit not found" });
+    }
+    context.Response.StatusCode = StatusCodes.Status200OK;
+    return Results.Json(new
+    {
+        success = true,
+        error = "",
+        login = dbUser.Login,
+        balance = balance.Cents,
+        limit = limit.Cents
+    });
+})
+.Accepts<User>("application/json", "User Registration")
+.WithOpenApi();
+
+
+
+
+
+
+
+
+
+
+// RUN!
 
 app.Run();
 
