@@ -54,7 +54,7 @@ public static class Security
         if (!ValidateBearerJwtPrefix(bearerJwt)) return false;
         var jwt = GetJwtFromBearerJwt(bearerJwt);
         var payload = GetJwtLoad(jwt, secret, true);
-        if (payload is null) return false;
+        if (payload.Count == 0) return false;
         if (!payload.ContainsKey(PayLoadFieldLogin)) return false;
         if (!payload.ContainsKey(PayLoadFieldAuth)) return false;
         return login.Equals(payload[PayLoadFieldLogin].ToString(), StringComparison.OrdinalIgnoreCase)
@@ -67,7 +67,7 @@ public static class Security
 
     private static IDictionary<string, object> GetJwtLoad(string jwt, string secret, bool verify)
     {
-        IDictionary<string, object> payload = null;
+        IDictionary<string, object> payload = new Dictionary<string, object>();
         try
         {
             IJsonSerializer serializer = new JsonNetSerializer();
