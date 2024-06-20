@@ -66,3 +66,19 @@ public class UserSetting
     public bool IsDarkTheme { get; set; }
 }
 
+public class PersonalData
+{
+    public long UserId { get; set; }
+    public string? Email { get; set; }
+    public string? Tel { get; set; }
+    public string? Secret { get; set; }
+    public string? EmailHash { get; set; }
+    public string? TelHash { get; set; }
+    public string? SecretHash { get; set; }
+    public string? Salt { get; set; }
+    public string? EmailMasked { get; set; }
+    public string? TelMasked { get; set; }
+}
+
+
+

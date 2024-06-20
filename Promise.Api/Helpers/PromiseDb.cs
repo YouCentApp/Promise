@@ -14,6 +14,7 @@ public class PromiseDb : DbContext
     public DbSet<PromiseTransaction> PromiseTransactions { get; set; }
     public DbSet<Rate> Rates { get; set; }
     public DbSet<UserSetting> UserSettings { get; set; }
+    public DbSet<PersonalData> PersonalData { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -25,6 +26,7 @@ public class PromiseDb : DbContext
         modelBuilder.Entity<PromiseTransaction>().HasKey(pt => pt.Id);
         modelBuilder.Entity<Rate>().HasKey(r => r.CurrencyId);
         modelBuilder.Entity<UserSetting>().HasKey(us => us.UserId);
+        modelBuilder.Entity<PersonalData>().HasKey(pd => pd.UserId);
 
         modelBuilder.Entity<PromiseLimit>()
             .HasOne<User>()
@@ -65,5 +67,10 @@ public class PromiseDb : DbContext
             .HasOne<Currency>()
             .WithMany()
             .HasForeignKey(r => r.CurrencyId);
+
+        modelBuilder.Entity<PersonalData>()
+            .HasOne<User>()
+            .WithOne()
+            .HasForeignKey<PersonalData>(pd => pd.UserId);
     }
 }
