@@ -59,7 +59,7 @@ app.UseHttpsRedirection();
 
 
 
-// Check if the version of the APP is supported
+// MinVerSup endpoint. It checks if the version of the APP is supported.
 app.MapGet("/minversup", () =>
 {
     return new { major = 2, minor = 0, build = 0 };
@@ -72,7 +72,7 @@ app.MapGet("/minversup", () =>
 
 
 
-// Signin endpoint
+// SignIn endpoint
 app.MapPost("/signin", async (HttpContext context) =>
 {
     using var db = context.RequestServices.GetRequiredService<PromiseDb>();
@@ -141,7 +141,7 @@ app.MapPost("/signin", async (HttpContext context) =>
 
 
 
-// Signup endpoint
+// SignUp endpoint
 app.MapPost("/signup", async (HttpContext context) =>
 {
     using var db = context.RequestServices.GetRequiredService<PromiseDb>();
@@ -243,7 +243,7 @@ app.MapPost("/signup", async (HttpContext context) =>
 
 
 
-// Userinfo endpoint
+// UserInfo endpoint
 app.MapPost("/userinfo", async (HttpContext context) =>
 {
     using var db = context.RequestServices.GetRequiredService<PromiseDb>();
@@ -316,6 +316,123 @@ app.MapPost("/userinfo", async (HttpContext context) =>
 })
 .Accepts<User>("application/json", "User Info")
 .WithOpenApi();
+
+
+
+
+
+
+
+
+
+
+// DataUpdate endpoint
+
+app.MapPost("/dataupdate", async (HttpContext context) =>
+{
+    using var db = context.RequestServices.GetRequiredService<PromiseDb>();
+    User? user = null;
+    try
+    {
+        user = await context.Request.ReadFromJsonAsync<User>();
+    }
+    catch (Exception ex)
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        MainLogger.LogError("Error reading user from personal data update request : " + ex);
+        return Results.Json(new { success = false, error = "Server error..." });
+    }
+    if (user is null || user.Id < 1 || user.Login is null || user.Password is null ||
+        user.Login.Length < 1 || user.Password.Length < 1)
+    {
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        return Results.Json(new { success = false, error = "No data or wrong data provided" });
+    }
+
+    var dbUser = await db.Users.FirstOrDefaultAsync(u => u.Login == user.Login);
+    if (dbUser is null || dbUser.Password is null || dbUser.Salt is null || dbUser.Id != user.Id)
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+        return Results.Json(new { success = false, error = "User not found or login and Id don't match" });
+    }
+    var hash = Security.GetPasswordHash(user.Password, dbUser.Salt);
+    if (hash != dbUser.Password)
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return Results.Json(new { auth = false, error = "Wrong password!" });
+    }
+
+    PersonalData? personalData = null;
+    try
+    {
+        personalData = await context.Request.ReadFromJsonAsync<PersonalData>();
+    }
+    catch (Exception ex)
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        MainLogger.LogError("Error reading personal data from personal data update request : " + ex);
+        return Results.Json(new { success = false, error = "Server error..." });
+    }
+    if (personalData is null || personalData.Email is null || personalData.Tel is null || personalData.Secret is null)
+    {
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        return Results.Json(new { success = false, error = "No data or wrong data provided" });
+    }
+
+    var dbPersonalData = await db.PersonalData.FirstOrDefaultAsync(pd => pd.UserId == dbUser.Id);
+    if (dbPersonalData is null)
+    {
+        dbPersonalData = new PersonalData
+        {
+            UserId = dbUser.Id,
+            Email = "",
+            Tel = "",
+            Secret = "",
+            EmailHash = "",
+            TelHash = "",
+            SecretHash = "",
+            Salt = "",
+            EmailMasked = "",
+            TelMasked = ""
+        };
+        db.PersonalData.Add(dbPersonalData);
+    }
+    if (personalData.Email.Length > 0)
+    {
+        dbPersonalData.Email = personalData.Email;
+    }
+    if (personalData.Tel.Length > 0)
+    {
+        dbPersonalData.Tel = personalData.Tel;
+    }
+    if (personalData.Secret.Length > 0)
+    {
+        dbPersonalData.Secret = personalData.Secret;
+    }
+    var records = await db.SaveChangesAsync();
+    if (records < 1)
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        MainLogger.LogError("Error saving personal data to DB");
+        return Results.Json(new { success = false, error = "Server error..." });
+    }
+    context.Response.StatusCode = StatusCodes.Status202Accepted;
+    return Results.Json(new
+    {
+        success = true,
+        error = ""
+    });
+})
+.Accepts<User>("application/json", "User Info")
+.WithOpenApi();
+
+
+
+
+
+
+
+
 
 
 
