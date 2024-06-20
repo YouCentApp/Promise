@@ -116,7 +116,7 @@ app.MapPost("/signin", async (HttpContext context) =>
     {
         { Security.PayLoadFieldLogin, user.Login },
         { Security.PayLoadFieldAuth, true },
-        { Security.PayLoadFieldExp, DateTime.Now.AddHours(Security.AccessTokenLifetimeHours) }
+        { Security.PayLoadFieldExp, Security.GetAccessTokenLifetimeSeconds() }
     };
     var token = Security.CreateBearerJwt(payload, secret);
     context.Response.Headers.TryAdd(Security.AuthorizationHttpHeader, token);
