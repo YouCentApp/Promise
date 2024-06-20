@@ -94,12 +94,12 @@ app.MapPost("/signin", async (HttpContext context) =>
         return Results.Json(new { success = false, error = "No data or wrong data provided" });
     }
     var dbUser = db.Users.FirstOrDefault(u => u.Login == user.Login);
-    if (dbUser is null)
+    if (dbUser is null || dbUser.Password is null || dbUser.Salt is null)
     {
         context.Response.StatusCode = StatusCodes.Status404NotFound;
         return Results.Json(new { success = false, error = "User not found" });
     }
-    var hash = Security.GetHash(Security.GetHash(user.Password) + dbUser.Salt);
+    var hash = Security.GetPasswordHash(user.Password, dbUser.Salt);
     if (hash != dbUser.Password)
     {
         context.Response.StatusCode = StatusCodes.Status403Forbidden;

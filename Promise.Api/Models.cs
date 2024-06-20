@@ -1,7 +1,7 @@
-﻿namespace Promise.Api;
-
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore;
+
+namespace Promise.Api;
 
 public class Currency
 {

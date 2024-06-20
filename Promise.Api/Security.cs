@@ -5,7 +5,7 @@ using JWT;
 using JWT.Exceptions;
 using JWT.Serializers;
 
-namespace Promise.Lib;
+namespace Promise.Api;
 
 public static class Security
 {
