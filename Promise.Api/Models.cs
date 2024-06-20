@@ -6,26 +6,26 @@ using Microsoft.EntityFrameworkCore;
 public class Currency
 {
     public byte Id { get; set; }
-    public string Code { get; set; }
-    public string Number { get; set; }
-    public string Name { get; set; }
+    public string? Code { get; set; }
+    public string? Number { get; set; }
+    public string? Name { get; set; }
 }
 
 public class Language
 {
     public int Id { get; set; }
-    public string NameEng { get; set; }
-    public string NameCode { get; set; }
-    public string NameNative { get; set; }
+    public string? NameEng { get; set; }
+    public string? NameCode { get; set; }
+    public string? NameNative { get; set; }
 }
 
 
 public class User
 {
     public long Id { get; set; }
-    public string Login { get; set; }
-    public string Password { get; set; }
-    public string Salt { get; set; }
+    public string? Login { get; set; }
+    public string? Password { get; set; }
+    public string? Salt { get; set; }
     public DateTime CreationDate { get; set; }
 }
 
@@ -49,9 +49,9 @@ public class PromiseTransaction
     public long ReceiverId { get; set; }
     public int Cents { get; set; }
     public DateTime Date { get; set; }
-    public string Hash { get; set; }
+    public string? Hash { get; set; }
     public bool IsBlockchain { get; set; }
-    public string Memo { get; set; }
+    public string? Memo { get; set; }
 }
 
 public class Rate
