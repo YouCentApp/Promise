@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Promise.Api;
 using Promise.Lib;
+using Microsoft.OpenApi.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +9,33 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Please enter JWT with Bearer into field"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 // Add DbContext to the DI container
 var configuration = builder.Configuration;
@@ -29,12 +56,19 @@ app.UseHttpsRedirection();
 
 
 
+
+
+
 // Check if the version of the APP is supported
 app.MapGet("/minversup", () =>
 {
     return new { major = 2, minor = 0, build = 0 };
 })
 .WithOpenApi();
+
+
+
+
 
 
 
@@ -97,6 +131,10 @@ app.MapPost("/signin", async (HttpContext context) =>
 
 
 
+
+
+
+
 // Signup endpoint
 app.MapPost("/signup", async (HttpContext context) =>
 {
@@ -146,6 +184,10 @@ app.MapPost("/signup", async (HttpContext context) =>
 
 
 
+
+
+
+
 // Userinfo endpoint
 app.MapPost("/userinfo", async (HttpContext context) =>
 {
@@ -182,7 +224,7 @@ app.MapPost("/userinfo", async (HttpContext context) =>
         MainLogger.LogError("No secret provided for JWT");
         return Results.Json(new { success = false, error = "Server error..." });
     }
-    if (!Security.ValidateBearerAccessToken(jwt, secret, user.Login))
+    if (!Security.ValidateBearerAccessToken(jwt, user.Login, secret))
     {
         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
         return Results.Json(new { success = false, error = "Invalid token" });
@@ -216,7 +258,7 @@ app.MapPost("/userinfo", async (HttpContext context) =>
         limit = limit.Cents
     });
 })
-.Accepts<User>("application/json", "User Registration")
+.Accepts<User>("application/json", "User Info")
 .WithOpenApi();
 
 
