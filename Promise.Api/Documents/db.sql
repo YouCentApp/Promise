@@ -1,7 +1,11 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 
--- YCDB.dbo.Currencies definition
+-- Currencies definition
 
-CREATE TABLE YCDB.dbo.Currencies
+CREATE TABLE Currencies
 (
     Id tinyint NOT NULL,
     Code nchar(3) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
@@ -11,10 +15,10 @@ CREATE TABLE YCDB.dbo.Currencies
 );
 
 
--- YCDB.dbo.Languages definition
+-- Languages definition
 
 
-CREATE TABLE YCDB.dbo.Languages
+CREATE TABLE Languages
 (
     Id int NOT NULL,
     NameEng nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
@@ -24,10 +28,10 @@ CREATE TABLE YCDB.dbo.Languages
 );
 
 
--- YCDB.dbo.TempPersonalData definition
+-- TempPersonalData definition
 
 
-CREATE TABLE YCDB.dbo.TempPersonalData
+CREATE TABLE TempPersonalData
 (
     UserId bigint NOT NULL,
     FirstName nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
@@ -47,10 +51,10 @@ CREATE TABLE YCDB.dbo.TempPersonalData
 );
 
 
--- YCDB.dbo.Users definition
+-- Users definition
 
 
-CREATE TABLE YCDB.dbo.Users
+CREATE TABLE Users
 (
     Id bigint IDENTITY(2523236531105401,1) NOT NULL,
     [Login] nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
@@ -62,47 +66,47 @@ CREATE TABLE YCDB.dbo.Users
 );
 
 
--- YCDB.dbo.Balances definition
+-- Balances definition
 
 
-CREATE TABLE YCDB.dbo.Balances
+CREATE TABLE Balances
 (
     UserId bigint NOT NULL,
     Cents bigint NOT NULL,
     CONSTRAINT PK_Balances_UserId PRIMARY KEY (UserId),
-    CONSTRAINT FK_Balances_UserId_Users_Id FOREIGN KEY (UserId) REFERENCES YCDB.dbo.Users(Id)
+    CONSTRAINT FK_Balances_UserId_Users_Id FOREIGN KEY (UserId) REFERENCES Users(Id)
 );
 
 
--- YCDB.dbo.OneTimePasswords definition
+-- OneTimePasswords definition
 
 
-CREATE TABLE YCDB.dbo.OneTimePasswords
+CREATE TABLE OneTimePasswords
 (
     UserId bigint NOT NULL,
     Value nvarchar(256) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
     Expiration datetime2 NOT NULL,
     CONSTRAINT PK_OneTimePasswords_UserId PRIMARY KEY (UserId),
-    CONSTRAINT FK_OneTimePasswords_UserId_Users_Id FOREIGN KEY (UserId) REFERENCES YCDB.dbo.Users(Id)
+    CONSTRAINT FK_OneTimePasswords_UserId_Users_Id FOREIGN KEY (UserId) REFERENCES Users(Id)
 );
 
 
--- YCDB.dbo.PromiseLimits definition
+-- PromiseLimits definition
 
 
-CREATE TABLE YCDB.dbo.PromiseLimits
+CREATE TABLE PromiseLimits
 (
     UserId bigint NOT NULL,
     Cents bigint NOT NULL,
     CONSTRAINT PK_PromiseLimits_UserId PRIMARY KEY (UserId),
-    CONSTRAINT FK_PromiseLimits_UserId_Users_Id FOREIGN KEY (UserId) REFERENCES YCDB.dbo.Users(Id)
+    CONSTRAINT FK_PromiseLimits_UserId_Users_Id FOREIGN KEY (UserId) REFERENCES Users(Id)
 );
 
 
--- YCDB.dbo.PromiseTransactions definition
+-- PromiseTransactions definition
 
 
-CREATE TABLE YCDB.dbo.PromiseTransactions
+CREATE TABLE PromiseTransactions
 (
     Id bigint IDENTITY(1,1) NOT NULL,
     SenderId bigint NOT NULL,
@@ -113,8 +117,8 @@ CREATE TABLE YCDB.dbo.PromiseTransactions
     IsBlockchain bit NOT NULL,
     Memo nvarchar(256) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
     CONSTRAINT PK_PromiseTransactions_Id PRIMARY KEY (Id),
-    CONSTRAINT FK_PromiseTransactions_ReceiverId_Users_Id FOREIGN KEY (ReceiverId) REFERENCES YCDB.dbo.Users(Id),
-    CONSTRAINT FK_PromiseTransactions_SenderId_Users_Id FOREIGN KEY (SenderId) REFERENCES YCDB.dbo.Users(Id)
+    CONSTRAINT FK_PromiseTransactions_ReceiverId_Users_Id FOREIGN KEY (ReceiverId) REFERENCES Users(Id),
+    CONSTRAINT FK_PromiseTransactions_SenderId_Users_Id FOREIGN KEY (SenderId) REFERENCES Users(Id)
 );
 CREATE NONCLUSTERED INDEX IX_PromiseTransactions_ReceiverId ON dbo.PromiseTransactions (  ReceiverId ASC  )  
 	 WITH (  PAD_INDEX = OFF ,FILLFACTOR = 100  ,SORT_IN_TEMPDB = OFF , IGNORE_DUP_KEY = OFF , STATISTICS_NORECOMPUTE = OFF , ONLINE = OFF , ALLOW_ROW_LOCKS = ON , ALLOW_PAGE_LOCKS = ON  )
@@ -127,30 +131,63 @@ CREATE NONCLUSTERED INDEX IX_PromiseTransactions_SenderId ON dbo.PromiseTransact
 
 
 
--- YCDB.dbo.Rates definition
+-- Rates definition
 
 
-CREATE TABLE YCDB.dbo.Rates
+CREATE TABLE Rates
 (
     CurrencyId tinyint NOT NULL,
     AmountFor100 float NOT NULL,
     UpdateDate date NOT NULL,
     CONSTRAINT PK_Rates_CurrencyId PRIMARY KEY (CurrencyId),
-    CONSTRAINT FK_Rates_CurrencyId_Currencies_Id FOREIGN KEY (CurrencyId) REFERENCES YCDB.dbo.Currencies(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT FK_Rates_CurrencyId_Currencies_Id FOREIGN KEY (CurrencyId) REFERENCES Currencies(Id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
--- YCDB.dbo.UserSettings definition
+-- UserSettings definition
 
 
-CREATE TABLE YCDB.dbo.UserSettings
+CREATE TABLE UserSettings
 (
     UserId bigint NOT NULL,
     LanguageId int NOT NULL,
     CurrencyId tinyint NOT NULL,
     IsDarkTheme bit NOT NULL,
     CONSTRAINT PK_UserSettings_UserId PRIMARY KEY (UserId),
-    CONSTRAINT FK_UserSettings_CurrencyId_Currencies_Id FOREIGN KEY (CurrencyId) REFERENCES YCDB.dbo.Currencies(Id),
-    CONSTRAINT FK_UserSettings_LanguageId_Languages_Id FOREIGN KEY (LanguageId) REFERENCES YCDB.dbo.Languages(Id),
-    CONSTRAINT FK_UserSettings_UserId_Users_Id FOREIGN KEY (UserId) REFERENCES YCDB.dbo.Users(Id)
+    CONSTRAINT FK_UserSettings_CurrencyId_Currencies_Id FOREIGN KEY (CurrencyId) REFERENCES Currencies(Id),
+    CONSTRAINT FK_UserSettings_LanguageId_Languages_Id FOREIGN KEY (LanguageId) REFERENCES Languages(Id),
+    CONSTRAINT FK_UserSettings_UserId_Users_Id FOREIGN KEY (UserId) REFERENCES Users(Id)
 );
+
+
+
+-- PersonalData definition
+
+CREATE TABLE [dbo].[UserSettings]
+(
+    [UserId] [bigint] NOT NULL,
+    [LanguageId] [int] NOT NULL,
+    [CurrencyId] [tinyint] NOT NULL,
+    [IsDarkTheme] [bit] NOT NULL
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[UserSettings] ADD  CONSTRAINT [PK_UserSettings_UserId] PRIMARY KEY CLUSTERED 
+(
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[UserSettings]  WITH CHECK ADD  CONSTRAINT [FK_UserSettings_CurrencyId_Currencies_Id] FOREIGN KEY([CurrencyId])
+REFERENCES [dbo].[Currencies] ([Id])
+GO
+ALTER TABLE [dbo].[UserSettings] CHECK CONSTRAINT [FK_UserSettings_CurrencyId_Currencies_Id]
+GO
+ALTER TABLE [dbo].[UserSettings]  WITH CHECK ADD  CONSTRAINT [FK_UserSettings_LanguageId_Languages_Id] FOREIGN KEY([LanguageId])
+REFERENCES [dbo].[Languages] ([Id])
+GO
+ALTER TABLE [dbo].[UserSettings] CHECK CONSTRAINT [FK_UserSettings_LanguageId_Languages_Id]
+GO
+ALTER TABLE [dbo].[UserSettings]  WITH CHECK ADD  CONSTRAINT [FK_UserSettings_UserId_Users_Id] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Users] ([Id])
+GO
+ALTER TABLE [dbo].[UserSettings] CHECK CONSTRAINT [FK_UserSettings_UserId_Users_Id]
+GO
