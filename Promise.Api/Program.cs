@@ -121,7 +121,13 @@ app.MapPost("/signin", async (HttpContext context) =>
     var token = Security.CreateBearerJwt(payload, secret);
     context.Response.Headers.TryAdd(Security.AuthorizationHttpHeader, token);
     context.Response.StatusCode = StatusCodes.Status202Accepted;
-    return Results.Json(new { success = true, error = "" }); ;
+    return Results.Json(new
+    {
+        success = true,
+        error = "",
+        id = dbUser.Id,
+        login = dbUser.Login
+    });
 })
 .Accepts<User>("application/json", "User Login")
 .WithOpenApi();
@@ -173,7 +179,8 @@ app.MapPost("/signup", async (HttpContext context) =>
     };
     db.Users.Add(newUser);
     var records = await db.SaveChangesAsync();
-    if (records > 0)
+    dbUser = db.Users.FirstOrDefault(u => u.Login == user.Login);
+    if (records > 0 && dbUser != null)
     {
         var balance = new Balance
         {
@@ -198,7 +205,7 @@ app.MapPost("/signup", async (HttpContext context) =>
         records = await db.SaveChangesAsync();
         if (records < 3)
         {
-            db.Users.Remove(newUser);
+            db.Users.Remove(dbUser);
             db.Balances.Remove(balance);
             db.PromiseLimits.Remove(limit);
             db.UserSettings.Remove(settings);
@@ -215,7 +222,13 @@ app.MapPost("/signup", async (HttpContext context) =>
         return Results.Json(new { success = false, error = "Server error..." });
     }
     context.Response.StatusCode = StatusCodes.Status202Accepted;
-    return Results.Json(new { success = true, error = "" });
+    return Results.Json(new
+    {
+        success = true,
+        error = "",
+        id = dbUser.Id,
+        login = dbUser.Login
+    });
 })
 .Accepts<User>("application/json", "User Registration")
 .WithOpenApi();
@@ -295,6 +308,7 @@ app.MapPost("/userinfo", async (HttpContext context) =>
     {
         success = true,
         error = "",
+        id = dbUser.Id,
         login = dbUser.Login,
         balance = balance.Cents,
         limit = limit.Cents
