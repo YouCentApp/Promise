@@ -162,6 +162,7 @@ app.MapPost("/signup", async (HttpContext context) =>
         context.Response.StatusCode = StatusCodes.Status409Conflict;
         return Results.Json(new { success = false, error = "Username already exists, sorry..." });
     }
+
     var salt = Security.GetSalt();
     var newUser = new User
     {
@@ -171,7 +172,48 @@ app.MapPost("/signup", async (HttpContext context) =>
         CreationDate = DateTime.Now
     };
     db.Users.Add(newUser);
-    await db.SaveChangesAsync();
+    var records = await db.SaveChangesAsync();
+    if (records > 0)
+    {
+        var balance = new Balance
+        {
+            UserId = newUser.Id,
+            Cents = 0
+        };
+        db.Balances.Add(balance);
+        var limit = new PromiseLimit
+        {
+            UserId = newUser.Id,
+            Cents = 1500
+        };
+        db.PromiseLimits.Add(limit);
+        var settings = new UserSetting
+        {
+            UserId = newUser.Id,
+            CurrencyId = 1,
+            LanguageId = 1,
+            IsDarkTheme = false
+        };
+        db.UserSettings.Add(settings);
+        records = await db.SaveChangesAsync();
+        if (records < 3)
+        {
+            db.Users.Remove(newUser);
+            db.Balances.Remove(balance);
+            db.PromiseLimits.Remove(limit);
+            db.UserSettings.Remove(settings);
+            await db.SaveChangesAsync();
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            MainLogger.LogError("Error saving user related data to the DB");
+            return Results.Json(new { success = false, error = "Server error..." });
+        }
+    }
+    else
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        MainLogger.LogError("Error saving user to DB");
+        return Results.Json(new { success = false, error = "Server error..." });
+    }
     context.Response.StatusCode = StatusCodes.Status202Accepted;
     return Results.Json(new { success = true, error = "" });
 })
