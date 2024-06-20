@@ -331,23 +331,38 @@ app.MapPost("/userinfo", async (HttpContext context) =>
 app.MapPost("/dataupdate", async (HttpContext context) =>
 {
     using var db = context.RequestServices.GetRequiredService<PromiseDb>();
-    User? user = null;
+    UserData? userData = null;
     try
     {
-        user = await context.Request.ReadFromJsonAsync<User>();
+        userData = await context.Request.ReadFromJsonAsync<UserData>();
     }
     catch (Exception ex)
     {
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        MainLogger.LogError("Error reading user from personal data update request : " + ex);
+        MainLogger.LogError("Error reading user and personal data from request : " + ex);
         return Results.Json(new { success = false, error = "Server error..." });
     }
-    if (user is null || user.Id < 1 || user.Login is null || user.Password is null ||
-        user.Login.Length < 1 || user.Password.Length < 1)
+
+    if (userData is null || userData.User is null || userData.User.Id < 1 ||
+        string.IsNullOrWhiteSpace(userData.User.Login) ||
+        string.IsNullOrWhiteSpace(userData.User.Password))
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
-        return Results.Json(new { success = false, error = "No data or wrong data provided" });
+        MainLogger.LogError("Error reading user from user data update request");
+        return Results.Json(new { success = false, error = "No data or wrong data provided for User" });
     }
+    var user = userData.User;
+
+    if (userData.PersonalData is null ||
+        userData.PersonalData.Email is null ||
+        userData.PersonalData.Tel is null ||
+        userData.PersonalData.Secret is null)
+    {
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        MainLogger.LogError("Error reading personal data from personal data update request");
+        return Results.Json(new { success = false, error = "No data or wrong data provided for PersonalData" });
+    }
+    var personalData = userData.PersonalData;
 
     var dbUser = await db.Users.FirstOrDefaultAsync(u => u.Login == user.Login);
     if (dbUser is null || dbUser.Password is null || dbUser.Salt is null || dbUser.Id != user.Id)
@@ -360,23 +375,6 @@ app.MapPost("/dataupdate", async (HttpContext context) =>
     {
         context.Response.StatusCode = StatusCodes.Status403Forbidden;
         return Results.Json(new { auth = false, error = "Wrong password!" });
-    }
-
-    PersonalData? personalData = null;
-    try
-    {
-        personalData = await context.Request.ReadFromJsonAsync<PersonalData>();
-    }
-    catch (Exception ex)
-    {
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        MainLogger.LogError("Error reading personal data from personal data update request : " + ex);
-        return Results.Json(new { success = false, error = "Server error..." });
-    }
-    if (personalData is null || personalData.Email is null || personalData.Tel is null || personalData.Secret is null)
-    {
-        context.Response.StatusCode = StatusCodes.Status400BadRequest;
-        return Results.Json(new { success = false, error = "No data or wrong data provided" });
     }
 
     var dbPersonalData = await db.PersonalData.FirstOrDefaultAsync(pd => pd.UserId == dbUser.Id);
@@ -423,7 +421,7 @@ app.MapPost("/dataupdate", async (HttpContext context) =>
         error = ""
     });
 })
-.Accepts<User>("application/json", "User Info")
+.Accepts<UserData>("application/json", "User and Personal Data")
 .WithOpenApi();
 
 
