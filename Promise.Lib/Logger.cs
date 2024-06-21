@@ -1,5 +1,4 @@
 ﻿using NLog;
-namespace Promise.Lib;
 
 public static class MainLogger
 {
