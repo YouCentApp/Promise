@@ -16,7 +16,7 @@
     @if (!string.IsNullOrEmpty(errorMessage))
     {
         <div class="alert alert-danger" role="alert">
-            @errorMessage
+        @errorMessage
         </div>
     }
 </div>
@@ -30,8 +30,14 @@
     {
         errorMessage = null;
         ValidateForm();
-        Console.WriteLine($"Username: {username}");
-        Console.WriteLine($"Password: {password}");
+        if (string.IsNullOrEmpty(errorMessage))
+        {
+            var api = Settings.GetApiUrl();
+            // temp debugging
+            Console.WriteLine($"API: {api}");
+            Console.WriteLine($"Username: {username}");
+            Console.WriteLine($"Password: {password}");
+        }
     }
 
     private void ValidateForm()
@@ -39,10 +45,17 @@
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
             errorMessage = "Please enter a username and password.";
+            return;
         }
-        else
+        if (username?.Length < Policy.MinimumUsernameLength || password?.Length < Policy.MinimumPasswordLength)
         {
-            errorMessage = null;
+            errorMessage = "Username or/and password must be longer.";
+            return;
+        }
+        if (username?.Length > Policy.MaximumUsernameLength || password?.Length > Policy.MaximumPasswordLength)
+        {
+            errorMessage = "Username or/and password must be shorter.";
+            return;
         }
     }
 }
