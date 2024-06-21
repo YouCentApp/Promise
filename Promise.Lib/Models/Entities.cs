@@ -1,5 +1,4 @@
-﻿namespace Promise.Api;
-
+﻿
 public class Currency
 {
     public byte Id { get; set; }
