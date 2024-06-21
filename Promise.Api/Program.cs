@@ -157,7 +157,7 @@ app.MapPost("/signup", async (HttpContext context) =>
         return Results.Json(new { success = false, error = "Server error..." });
     }
     if (user is null || user.Login is null || user.Password is null ||
-        user.Login.Length < Policy.MinimumLoginLength || user.Password.Length < Policy.MinimumPasswordLength)
+        user.Login.Length < Policy.MinimumUsernameLength || user.Password.Length < Policy.MinimumPasswordLength)
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
         return Results.Json(new { success = false, error = "No data or wrong data provided" });

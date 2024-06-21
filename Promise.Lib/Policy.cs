@@ -4,9 +4,9 @@ public class Policy
 
     public const int MaximumPasswordLength = 40;
 
-    public const int MinimumLoginLength = 5;
+    public const int MinimumUsernameLength = 5;
 
-    public const int MaximumLoginLength = 50;
+    public const int MaximumUsernameLength = 50;
 }
 
 
