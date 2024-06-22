@@ -16,9 +16,17 @@ public static class MauiProgram
 
 		builder.Services.AddMauiBlazorWebView();
 
+		builder.Services.AddScoped<IMyEnvironment, MyEnvironment>();
+		builder.Services.AddScoped<ISettings, Settings>();
+
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
+		Environment.SetEnvironmentVariable(MyEnvironment.MauiEnviroment, MyEnvironment.Dev);
+#endif
+
+#if RELEASE
+		Environment.SetEnvironmentVariable(MyEnvironment.MauiEnviroment, MyEnvironment.Prod);
 #endif
 
 		return builder.Build();

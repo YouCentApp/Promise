@@ -1,3 +1,4 @@
+using Promise.Web;
 using Promise.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,6 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddScoped<IMyEnvironment, MyEnvironment>();
+builder.Services.AddScoped<ISettings, Settings>();
 
 var app = builder.Build();
 
