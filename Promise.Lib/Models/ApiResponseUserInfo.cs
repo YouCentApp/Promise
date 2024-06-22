@@ -1,5 +1,5 @@
 ﻿public class ApiResponseUserInfo : ApiResponseUser
 {
-    public string? Balance { get; set; }
-    public string? PromiseLimit { get; set; }
+    public long Balance { get; set; }
+    public long PromiseLimit { get; set; }
 }

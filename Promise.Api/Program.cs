@@ -226,12 +226,12 @@ app.MapPost("/signup", async (HttpContext context) =>
         return Results.Json(new { success = false, error = "Server error..." });
     }
     context.Response.StatusCode = StatusCodes.Status202Accepted;
-    return Results.Json(new
+    return Results.Json(new ApiResponseUser
     {
-        success = true,
-        error = "",
-        id = dbUser.Id,
-        login = dbUser.Login
+        Success = true,
+        Error = "",
+        Id = dbUser.Id,
+        Login = dbUser.Login
     });
 })
 .Accepts<User>("application/json", "User data for Sign Up")
@@ -308,14 +308,14 @@ app.MapPost("/userinfo", async (HttpContext context) =>
         return Results.Json(new { success = false, error = "Promise limit not found" });
     }
     context.Response.StatusCode = StatusCodes.Status200OK;
-    return Results.Json(new
+    return Results.Json(new ApiResponseUserInfo
     {
-        success = true,
-        error = "",
-        id = dbUser.Id,
-        login = dbUser.Login,
-        balance = balance.Cents,
-        limit = limit.Cents
+        Success = true,
+        Error = "",
+        Id = dbUser.Id,
+        Login = dbUser.Login,
+        Balance = balance.Cents,
+        PromiseLimit = limit.Cents
     });
 })
 .Accepts<User>("application/json", "User data for User Info")
@@ -416,10 +416,10 @@ app.MapPost("/dataupdate", async (HttpContext context) =>
         return Results.Json(new { success = false, error = "Server error..." });
     }
     context.Response.StatusCode = StatusCodes.Status202Accepted;
-    return Results.Json(new
+    return Results.Json(new ApiResponse
     {
-        success = true,
-        error = ""
+        Success = true,
+        Error = ""
     });
 })
 .Accepts<UserData>("application/json", "User data for Data Update")
