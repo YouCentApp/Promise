@@ -6,14 +6,16 @@
 <div class="container">
     <div class="form-group">
         <label for="username">Username:</label>
-        <input type="text" class="form-control" id="username" @bind="username" />
+        <input type="text" class="form-control" @bind="username" />
     </div>
 
     <div class="form-group">
         <label for="password">Password:</label>
-        <input type="password" class="form-control" id="password" @bind="password" />
+        <input type="password" class="form-control" @bind="password" />
     </div>
+
     <button class="btn btn-primary" @onclick="SubmitForm">Submit</button>
+
     @if (!string.IsNullOrEmpty(errorMessage))
     {
         <div class="alert alert-danger" role="alert">
@@ -26,14 +28,15 @@
     private string? username;
     private string? password;
     private string? errorMessage;
+    private string api = settings.ApiUrl;
 
     private void SubmitForm()
     {
         errorMessage = null;
         ValidateForm();
+
         if (string.IsNullOrEmpty(errorMessage))
         {
-            var api = settings.ApiUrl;
             if (string.IsNullOrEmpty(api))
             {
                 MainLogger.LogError("API URL is not set.");
@@ -41,13 +44,14 @@
                 return;
             }
 
-            // CONTINUE CODING HERE - BUT FIRST CHECK IF MAUI ALSO SEEs THE API url
 
-            // temp debugging
+// temp
             errorMessage = "Form submitted. API : " + api;
             Console.WriteLine($"API: {api}");
             Console.WriteLine($"Username: {username}");
             Console.WriteLine($"Password: {password}");
+
+            //end temp
         }
     }
 
@@ -58,11 +62,13 @@
             errorMessage = "Please enter a username and password.";
             return;
         }
+
         if (username?.Length < Policy.MinimumUsernameLength || password?.Length < Policy.MinimumPasswordLength)
         {
             errorMessage = "Username or/and password must be longer.";
             return;
         }
+
         if (username?.Length > Policy.MaximumUsernameLength || password?.Length > Policy.MaximumPasswordLength)
         {
             errorMessage = "Username or/and password must be shorter.";
