@@ -50,8 +50,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+// else
+// {
 app.UseHttpsRedirection();
+//}
+
+
 
 
 
@@ -121,12 +125,12 @@ app.MapPost("/signin", async (HttpContext context) =>
     var token = Security.CreateBearerJwt(payload, secret);
     context.Response.Headers.TryAdd(Security.AuthorizationHttpHeader, token);
     context.Response.StatusCode = StatusCodes.Status202Accepted;
-    return Results.Json(new
+    return Results.Json(new ApiResponseUser
     {
-        success = true,
-        error = "",
-        id = dbUser.Id,
-        login = dbUser.Login
+        Success = true,
+        Error = "",
+        Id = dbUser.Id,
+        Login = dbUser.Login
     });
 })
 .Accepts<User>("application/json", "User data for Sign In")

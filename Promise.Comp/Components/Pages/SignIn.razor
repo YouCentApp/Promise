@@ -1,4 +1,6 @@
 ﻿@page "/signin"
+@using System.Text.Json
+@using System.Text
 @inject ISettings settings
 
 <h1>Sign In</h1>
@@ -14,7 +16,7 @@
         <input type="password" class="form-control" @bind="password" />
     </div>
 
-    <button class="btn btn-primary" @onclick="SubmitForm">Submit</button>
+    <button class="btn btn-primary" @onclick="TrySignInAsync">Submit</button>
 
     @if (!string.IsNullOrEmpty(errorMessage))
     {
@@ -28,9 +30,9 @@
     private string? username;
     private string? password;
     private string? errorMessage;
-    private string api = settings.ApiUrl;
+    private string api => settings.ApiUrl;
 
-    private void SubmitForm()
+    private async Task TrySignInAsync()
     {
         errorMessage = null;
         ValidateForm();
@@ -44,9 +46,45 @@
                 return;
             }
 
+            var user = new User
+                {
+                    Login = username,
+                    Password = password
+                };
 
-// temp
-            errorMessage = "Form submitted. API : " + api;
+            var json = JsonSerializer.Serialize(user);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.PostAsync($"{api}/signin", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var responseObject = JsonSerializer.Deserialize<ApiResponseUser>(responseContent);
+
+                if (responseObject is not null && responseObject.Success)
+                {
+                    var token = response.Headers.GetValues("Authorization").FirstOrDefault();
+                    // Store the token in a global state variable
+                    // $GLOBAL_STATE_VARIABLE$ = token;
+                    //temp
+                    errorMessage = " API returned token " + token;
+                }
+                else
+                {
+                    errorMessage = responseObject?.Error ?? "Sorry, something went wrong. Please try again later.";
+                }
+            }
+            else
+            {
+                errorMessage = "Sorry, something went wrong. Please try again later.";
+            }
+
+
+
+            // temp
+            //errorMessage = "Form submitted. API : " + api;
             Console.WriteLine($"API: {api}");
             Console.WriteLine($"Username: {username}");
             Console.WriteLine($"Password: {password}");
