@@ -58,11 +58,9 @@
             using var httpClient = new HttpClient();
             var response = await httpClient.PostAsync($"{api}/signin", content);
 
-            if(response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 var responseObject = await response.Content.ReadFromJsonAsync<ApiResponseUser>();
-                //var responseObject = JsonSerializer.Deserialize<ApiResponseUser>(responseContent);
-                //var responseObject = await responseContent.ReadFromJsonAsync<ApiResponseUser>();
 
                 if (responseObject is not null && responseObject.Success)
                 {
@@ -85,13 +83,6 @@
 
 
 
-            // temp
-            //errorMessage = "Form submitted. API : " + api;
-            Console.WriteLine($"API: {api}");
-            Console.WriteLine($"Username: {username}");
-            Console.WriteLine($"Password: {password}");
-
-            //end temp
         }
     }
 
@@ -102,12 +93,6 @@
             errorMessage = "Please enter a username and password.";
             return;
         }
-
-        @* if (username?.Length < Policy.MinimumUsernameLength || password?.Length < Policy.MinimumPasswordLength)
-        {
-            errorMessage = "Username or/and password must be longer.";
-            return;
-        } *@
 
         if (username?.Length > Policy.MaximumUsernameLength || password?.Length > Policy.MaximumPasswordLength)
         {
