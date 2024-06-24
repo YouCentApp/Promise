@@ -1,6 +1,6 @@
 ﻿@font-face {
     font-family: YouCentNunito;
-    src: url('/fonts/Nunito.ttf');
+    src: url('../fonts/Nunito.ttf');
 }
 
 html, body {
