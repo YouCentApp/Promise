@@ -19,10 +19,5 @@
     <ProjectReference Include="..\Promise.Lib\Promise.Lib.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot/fonts/" />
-    <Folder Include="wwwroot/images/" />
-    <Folder Include="wwwroot/fonts/" />
-  </ItemGroup>
 
 </Project>
