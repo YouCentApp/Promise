@@ -45,23 +45,20 @@
                 errorMessage = "Sorry, something went wrong. Please try again later.";
                 return;
             }
-
             var user = new User
                 {
                     Login = username,
                     Password = password
                 };
-
             var json = JsonSerializer.Serialize(user);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             using var httpClient = new HttpClient();
             var response = await httpClient.PostAsync($"{api}/signin", content);
+            var responseObject = await response.Content.ReadFromJsonAsync<ApiResponseUser>();
 
             if (response.IsSuccessStatusCode)
             {
-                var responseObject = await response.Content.ReadFromJsonAsync<ApiResponseUser>();
-
                 if (responseObject is not null && responseObject.Success)
                 {
                     var token = response.Headers.GetValues("Authorization").FirstOrDefault();
@@ -77,12 +74,8 @@
             }
             else
             {
-                var responseObject = await response?.Content?.ReadFromJsonAsync<ApiResponseUser>();
                 errorMessage = responseObject?.Error ?? "Sorry, something went wrong. Please try again later.";
             }
-
-
-
         }
     }
 
@@ -93,7 +86,6 @@
             errorMessage = "Please enter a username and password.";
             return;
         }
-
         if (username?.Length > Policy.MaximumUsernameLength || password?.Length > Policy.MaximumPasswordLength)
         {
             errorMessage = "Username or/and password must be shorter.";
