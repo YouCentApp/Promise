@@ -10,10 +10,5 @@
     <ProjectReference Include="..\Promise.Comp\Promise.Comp.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="nlogs\**">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
 
 </Project>

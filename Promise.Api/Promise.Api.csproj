@@ -24,10 +24,6 @@
     <Folder Include="Documents/" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="nlogs\**">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
+
 
 </Project>
