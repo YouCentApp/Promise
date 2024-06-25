@@ -18,6 +18,7 @@ public static class MauiProgram
 
 		builder.Services.AddScoped<IMyEnvironment, MyEnvironment>();
 		builder.Services.AddScoped<ISettings, Settings>();
+		builder.Services.AddScoped<SessionState>();
 
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();

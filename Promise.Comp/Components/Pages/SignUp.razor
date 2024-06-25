@@ -4,6 +4,7 @@
 @using System.Text.RegularExpressions
 @inject NavigationManager navigationManager
 @inject ISettings settings
+@inject SessionState sessionState
 
 <h1>Sign Up</h1>
 
@@ -53,21 +54,27 @@
             var json = JsonSerializer.Serialize(user);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             
-            //temp
-            errorMessage = json;
-            
-            
-            //var response = await httpClient.PostAsync(api, content);
+            var response = await httpClient.PostAsync($"{api}/signup", content);
+            var responseObject = await response.Content.ReadFromJsonAsync<ApiResponseUser>();
 
-            @* if (response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                // Redirect to /signupdata page if the signup is successful
-                navigationManager.NavigateTo("/signupdata");
+                if (responseObject is not null && responseObject.Success)
+                {
+                    sessionState.UserId = responseObject.Id;
+                    sessionState.Username = responseObject.Login;
+                    sessionState.Password = password;
+                    navigationManager.NavigateTo("/signupdata");
+                }
+                else
+                {
+                    errorMessage = responseObject?.Error ?? "Sorry, something went wrong. Please try again later.";
+                }
             }
             else
             {
-                // Handle the error case if needed
-            } *@
+                errorMessage = responseObject?.Error ?? "Sorry, something went wrong. Please try again later.";
+            }
         }
     }
 
