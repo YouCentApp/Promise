@@ -1,0 +1,113 @@
+﻿@page "/signup"
+@using System.Text.Json
+@using System.Text
+@using System.Text.RegularExpressions
+@inject NavigationManager navigationManager
+@inject ISettings settings
+
+<h1>Sign Up</h1>
+
+<div class="container">
+    <div class="form-group">
+        <label for="login">Username:</label>
+        <input type="text" class="form-control" @bind="username" />
+    </div>
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" class="form-control" @bind="password" />
+    </div>
+    <div class="form-group">
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" class="form-control" @bind="confirmPassword" />
+    </div>
+    <button class="btn btn-primary" @onclick="HandleSignUpAsync">Sign Up</button>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+</div>
+
+@code {
+    private string? username;
+    private string? password;
+    private string? confirmPassword;
+    private string? errorMessage;
+    private string api => settings.ApiUrl;
+
+    private async Task HandleSignUpAsync()
+    {
+        ValidateForm();
+
+        if (string.IsNullOrEmpty(errorMessage))
+        {
+            using var httpClient = new HttpClient();
+            var user = new User
+                {
+                    Login = username,
+                    Password = password
+                };
+
+            var json = JsonSerializer.Serialize(user);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PostAsync(api, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Redirect to /signupdata page if the signup is successful
+                navigationManager.NavigateTo("/signupdata");
+            }
+            else
+            {
+                // Handle the error case if needed
+            }
+        }
+    }
+
+    private void ValidateForm()
+    {
+        errorMessage = string.Empty;
+
+        if (string.IsNullOrEmpty(username))
+        {
+            errorMessage = "Username is required.";
+            return;
+
+        }
+        else if (string.IsNullOrEmpty(password))
+        {
+            errorMessage = "Password is required.";
+            return;
+        }
+        else if (string.IsNullOrEmpty(confirmPassword))
+        {
+            errorMessage = "Confirm Password is required.";
+            return;
+        }
+        else if (password != confirmPassword)
+        {
+            errorMessage = "Passwords do not match.";
+            return;
+        }
+
+        if (username.Length < Policy.MinimumUsernameLength || username.Length > Policy.MaximumUsernameLength)
+        {
+            errorMessage = $"Username must be between {Policy.MinimumUsernameLength} and {Policy.MaximumUsernameLength} characters.";
+            return;
+        }
+        else if (password.Length < Policy.MinimumPasswordLength || password.Length > Policy.MaximumPasswordLength)
+        {
+            errorMessage = $"Password must be between {Policy.MinimumPasswordLength} and {Policy.MaximumPasswordLength} characters.";
+            return;
+        }
+        
+        if (!Regex.IsMatch(password, Policy.PasswordRegex))
+        {
+            errorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.";
+            return;
+    }
+}
+}

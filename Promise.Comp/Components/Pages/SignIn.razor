@@ -24,6 +24,13 @@
             @errorMessage
         </div>
     }
+
+    <div class="text-center mt-4">
+        <p>Don't have an account?
+            <a href="/signup" class="btn btn-link">Sign up</a>
+        </p>
+    </div>
+
 </div>
 
 @code {
@@ -34,7 +41,6 @@
 
     private async Task TrySignInAsync()
     {
-        errorMessage = null;
         ValidateForm();
 
         if (string.IsNullOrEmpty(errorMessage))
@@ -64,8 +70,9 @@
                     var token = response.Headers.GetValues("Authorization").FirstOrDefault();
                     // Store the token in a global state variable
                     // $GLOBAL_STATE_VARIABLE$ = token;
+                    // and then redirect to the home page...
                     //temp
-                    errorMessage = " API returned token " + token;
+                    //errorMessage = " API returned token " + token;
                 }
                 else
                 {
@@ -81,6 +88,8 @@
 
     private void ValidateForm()
     {
+        errorMessage = string.Empty;
+
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
             errorMessage = "Please enter a username and password.";
