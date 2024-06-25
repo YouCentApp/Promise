@@ -52,10 +52,14 @@
 
             var json = JsonSerializer.Serialize(user);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
+            
+            //temp
+            errorMessage = json;
+            
+            
+            //var response = await httpClient.PostAsync(api, content);
 
-            var response = await httpClient.PostAsync(api, content);
-
-            if (response.IsSuccessStatusCode)
+            @* if (response.IsSuccessStatusCode)
             {
                 // Redirect to /signupdata page if the signup is successful
                 navigationManager.NavigateTo("/signupdata");
@@ -63,7 +67,7 @@
             else
             {
                 // Handle the error case if needed
-            }
+            } *@
         }
     }
 

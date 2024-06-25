@@ -8,7 +8,7 @@ public class Policy
 
     public const int MaximumUsernameLength = 50;
 
-    public const string PasswordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,40}$";
+    public const string PasswordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).*$";
 }
 
 
