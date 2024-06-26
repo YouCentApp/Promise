@@ -1,9 +1,17 @@
 ﻿@page "/signin"
+@page "/signin/{signup}"
 @using System.Text.Json
 @using System.Text
 @inject ISettings settings
+@inject ISessionStorage sessionStorage
+@inject NavigationManager navigationManager
 
 <h1>Sign In</h1>
+
+@if (!string.IsNullOrEmpty(signup) && signup == "newsignup")
+{
+    <div class="alert alert-success" role="alert">Thank you for signing up! You can now sign in.</div>
+}
 
 <div class="container">
     <div class="form-group">
@@ -30,14 +38,23 @@
             <a href="/signup" class="btn btn-link">Sign up</a>
         </p>
     </div>
-
 </div>
 
 @code {
+    [Parameter]
+    public string? signup { get; set; }
     private string? username;
     private string? password;
     private string? errorMessage;
     private string api => settings.ApiUrl;
+
+    protected async Task OnAfterRenderAsync()
+    {
+        if (!string.IsNullOrEmpty(signup) && signup == "newsignup")
+        {
+            username = await sessionStorage.GetAsync<string>("Username");
+        }
+    }
 
     private async Task TrySignInAsync()
     {

@@ -75,9 +75,8 @@
                     if (responseObject is not null && responseObject.Success)
                     {
                         await sessionStorage.RemoveAsync("Password");
-
-                        // also send EMAIL!!!
-                        navigationManager.NavigateTo("/signin?signup=success", forceLoad: true);
+                        await sessionStorage.RemoveAsync("UserId");
+                        navigationManager.NavigateTo("/signin/newsignup", forceLoad: true);
                     }
                     else
                     {
@@ -102,7 +101,7 @@
 
     private void ValidateForm()
     {
-        errorMessage = string.Empty;
+        errorMessage = null;
 
         if (!string.IsNullOrEmpty(Email) && !Regex.IsMatch(Email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
         {
