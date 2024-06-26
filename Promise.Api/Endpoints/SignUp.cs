@@ -90,10 +90,10 @@ public static class SignUp
             {
                 var mailSettings = context.RequestServices.GetRequiredService<IOptions<MailSettings>>();
                 var mailSender = new MailSender(mailSettings);
-                List<string> emails = ["YouCent<arkfen@youcent.app>"];
+                List<string> emails = [MailSender.SystemEMail];
                 var data = new MailData(emails, "New YouCent 2.0 Sign Up", "Sign Up username: " + user.Login);
-                await mailSender.SendAsync(data, new CancellationToken()).ConfigureAwait(false);
-                MainLogger.Log($" SignUp Web status: E-mail! | Username: {user.Login}");
+                _ = mailSender.SendAsync(data, new CancellationToken()).ConfigureAwait(false);
+                MainLogger.Log($"Sign Up via Web App e-mail must be sent! | Username: {user.Login}");
             }
             catch (Exception ex)
             {

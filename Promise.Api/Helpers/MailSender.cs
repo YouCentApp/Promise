@@ -15,12 +15,14 @@ namespace Promise.Api;
 
 public class MailSender
 {
+    public const string SystemEMail = "YouCent<arkfen@youcent.app>";
     private readonly MailSettings _settings;
 
     public MailSender(IOptions<MailSettings> settings)
     {
         _settings = settings.Value;
     }
+
 
     public async Task<bool> SendAsync(MailData mailData, CancellationToken ct = default)
     {
