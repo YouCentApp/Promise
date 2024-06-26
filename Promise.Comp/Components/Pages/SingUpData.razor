@@ -44,26 +44,26 @@
 
         if (string.IsNullOrEmpty(errorMessage))
         {
-            var user = new User
-                {
-                    Id = Convert.ToInt64(await sessionStorage.GetAsync<string>("UserId")),
-                    Login = await sessionStorage.GetAsync<string>("Username"),
-                    Password = await sessionStorage.GetAsync<string>("Password")
-                };
-            var data = new PersonalData
-                {
-                    Email = Email,
-                    Tel = PhoneNumber,
-                    Secret = SecretWord,
-                };
-            var userData = new UserData
-                {
-                    User = user,
-                    PersonalData = data
-                };
-            using var httpClient = new HttpClient();
             try
             {
+                var user = new User
+                    {
+                        Id = Convert.ToInt64(await sessionStorage.GetAsync<string>("UserId")),
+                        Login = await sessionStorage.GetAsync<string>("Username"),
+                        Password = await sessionStorage.GetAsync<string>("Password")
+                    };
+                var data = new PersonalData
+                    {
+                        Email = Email,
+                        Tel = PhoneNumber,
+                        Secret = SecretWord,
+                    };
+                var userData = new UserData
+                    {
+                        User = user,
+                        PersonalData = data
+                    };
+                using var httpClient = new HttpClient();
                 var json = JsonSerializer.Serialize(userData);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
