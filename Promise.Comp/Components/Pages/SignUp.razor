@@ -4,7 +4,7 @@
 @using System.Text.RegularExpressions
 @inject NavigationManager navigationManager
 @inject ISettings settings
-@inject SessionState sessionState
+@inject ISessionStorage sessionStorage
 
 <h1>Sign Up</h1>
 
@@ -44,36 +44,46 @@
 
         if (string.IsNullOrEmpty(errorMessage))
         {
-            using var httpClient = new HttpClient();
             var user = new User
                 {
                     Login = username,
                     Password = password
                 };
-
-            var json = JsonSerializer.Serialize(user);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            
-            var response = await httpClient.PostAsync($"{api}/signup", content);
-            var responseObject = await response.Content.ReadFromJsonAsync<ApiResponseUser>();
-
-            if (response.IsSuccessStatusCode)
+            using var httpClient = new HttpClient();
+            try
             {
-                if (responseObject is not null && responseObject.Success)
+                var json = JsonSerializer.Serialize(user);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                
+                var response = await httpClient.PostAsync($"{api}/signup", content);
+                var responseObject = await response.Content.ReadFromJsonAsync<ApiResponseUser>();
+
+                if (response.IsSuccessStatusCode)
                 {
-                    sessionState.UserId = responseObject.Id;
-                    sessionState.Username = responseObject.Login;
-                    sessionState.Password = password;
-                    navigationManager.NavigateTo("/signupdata");
+                    if (responseObject is not null && responseObject.Success)
+                    {
+                        
+                        await sessionStorage.SetAsync("UserId", responseObject.Id);
+                        await sessionStorage.SetAsync("Username", responseObject.Login);
+                        await sessionStorage.SetAsync("Password", password);
+                        navigationManager.NavigateTo("/signupdata", forceLoad: true);
+                    }
+                    else
+                    {
+                        MainLogger.LogError("Error while signing up : " + responseObject?.Error);
+                        errorMessage = responseObject?.Error ?? "Sorry, something went wrong. Please try again later.";
+                    }
                 }
                 else
                 {
+                    MainLogger.LogError("Error while signing up : " + responseObject?.Error);
                     errorMessage = responseObject?.Error ?? "Sorry, something went wrong. Please try again later.";
                 }
             }
-            else
+            catch (Exception ex)
             {
-                errorMessage = responseObject?.Error ?? "Sorry, something went wrong. Please try again later.";
+                MainLogger.LogError("Error while signing up : " + ex.Message);
+                errorMessage = "Sorry, something went wrong. Please try again later.";
             }
         }
     }

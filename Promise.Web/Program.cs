@@ -9,7 +9,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<IMyEnvironment, MyEnvironment>();
 builder.Services.AddScoped<ISettings, Settings>();
-builder.Services.AddScoped<SessionState>();
+builder.Services.AddScoped<ISessionStorage, SessionStorage>();
 
 var app = builder.Build();
 
