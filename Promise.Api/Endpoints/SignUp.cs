@@ -1,4 +1,5 @@
-﻿using Promise.Lib;
+﻿using Microsoft.Extensions.Options;
+using Promise.Lib;
 namespace Promise.Api;
 
 public static class SignUp
@@ -85,6 +86,19 @@ public static class SignUp
                 return Results.Json(new { success = false, error = "Server error..." });
             }
             context.Response.StatusCode = StatusCodes.Status202Accepted;
+            try
+            {
+                var mailSettings = context.RequestServices.GetRequiredService<IOptions<MailSettings>>();
+                var mailSender = new MailSender(mailSettings);
+                List<string> emails = ["YouCent<arkfen@youcent.app>"];
+                var data = new MailData(emails, "New YouCent 2.0 Sign Up", "Sign Up username: " + user.Login);
+                await mailSender.SendAsync(data, new CancellationToken()).ConfigureAwait(false);
+                MainLogger.Log($" SignUp Web status: E-mail! | Username: {user.Login}");
+            }
+            catch (Exception ex)
+            {
+                MainLogger.LogError($"Error sending e-mail about sign up with username {user.Login}: " + ex);
+            }
             return Results.Json(new ApiResponseUser
             {
                 Success = true,

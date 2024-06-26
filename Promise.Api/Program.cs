@@ -40,6 +40,8 @@ builder.Services.AddSwaggerGen(options =>
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<PromiseDb>(options => options.UseSqlServer(connectionString));
+var mailSettings = configuration.GetSection(nameof(MailSettings));
+builder.Services.Configure<MailSettings>(mailSettings);
 
 var app = builder.Build();
 
