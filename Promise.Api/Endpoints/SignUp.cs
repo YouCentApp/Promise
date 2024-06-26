@@ -86,6 +86,7 @@ public static class SignUp
                 return Results.Json(new { success = false, error = "Server error..." });
             }
             context.Response.StatusCode = StatusCodes.Status202Accepted;
+
             try
             {
                 var mailSettings = context.RequestServices.GetRequiredService<IOptions<MailSettings>>();
@@ -99,6 +100,7 @@ public static class SignUp
             {
                 MainLogger.LogError($"Error sending e-mail about sign up with username {user.Login}: " + ex);
             }
+
             return Results.Json(new ApiResponseUser
             {
                 Success = true,
