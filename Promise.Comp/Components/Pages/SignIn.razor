@@ -92,11 +92,10 @@
                 if (responseObject is not null && responseObject.Success)
                 {
                     var token = response.Headers.GetValues("Authorization").FirstOrDefault();
-                    // Store the token in a global state variable
-                    // $GLOBAL_STATE_VARIABLE$ = token;
-                    // and then redirect to the home page...
-                    //temp
-                    //errorMessage = " API returned token " + token;
+                    await sessionStorage.SetAsync("Token", token);
+                    await sessionStorage.SetAsync("Username", username);
+                    await sessionStorage.SetAsync("UserId", responseObject.User.Id.ToString());
+                    navigationManager.NavigateTo("/");
                 }
                 else
                 {
