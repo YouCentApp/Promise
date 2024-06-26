@@ -8,7 +8,7 @@
 
 <h1>Sign In</h1>
 
-@if (!string.IsNullOrEmpty(signup) && signup == "newsignup")
+@if (IsNewSignUp())
 {
     <div class="alert alert-success" role="alert">Thank you for signing up! You can now sign in.</div>
 }
@@ -48,12 +48,19 @@
     private string? errorMessage;
     private string api => settings.ApiUrl;
 
-    protected async Task OnAfterRenderAsync()
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!string.IsNullOrEmpty(signup) && signup == "newsignup")
+        if (IsNewSignUp())
         {
             username = await sessionStorage.GetAsync<string>("Username");
+            StateHasChanged();
         }
+    }
+
+    private bool IsNewSignUp()
+    {
+        return !string.IsNullOrEmpty(signup) && signup == "newsignup";
     }
 
     private async Task TrySignInAsync()
