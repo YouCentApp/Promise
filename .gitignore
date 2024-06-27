@@ -291,3 +291,4 @@ __pycache__/
 # Development environment configuration
 Promise.Api/appsettings.Development.json
 Promise.Web/appsettings.Development.json
+Promise.Native/key.keystore

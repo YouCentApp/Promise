@@ -26,11 +26,11 @@
         <ApplicationTitle>YouCent App</ApplicationTitle>
 
         <!-- App Identifier -->
-        <ApplicationId>app.youcent</ApplicationId>
+        <ApplicationId>app.YouCent</ApplicationId>
 
         <!-- Versions -->
         <ApplicationDisplayVersion>2.0</ApplicationDisplayVersion>
-        <ApplicationVersion>1</ApplicationVersion>
+        <ApplicationVersion>37</ApplicationVersion>
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
