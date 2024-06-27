@@ -19,5 +19,9 @@
     <ProjectReference Include="..\Promise.Lib\Promise.Lib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Helpers/" />
+  </ItemGroup>
+
 
 </Project>

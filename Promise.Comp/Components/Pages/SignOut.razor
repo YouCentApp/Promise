@@ -1,6 +1,7 @@
 ﻿@page "/signout"
 @inject ISessionStorage sessionStorage
 @inject NavigationManager navigationManager
+@inject AppState appState
 
 <h1>Signing Out...</h1>
 
@@ -10,10 +11,7 @@
         await sessionStorage.RemoveAsync("Username");
         await sessionStorage.RemoveAsync("Token");
         await sessionStorage.RemoveAsync("UserId");
-        AppState.IsSignedIn = false;
-        AppState.Username = "";
-        AppState.UserId = 0;
-        AppState.Token = "";
+        appState.Clean();
         navigationManager.NavigateTo("/", forceLoad: true);
     }
 

@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject AppState appState
 
 <h1>Welcome to YouCent App 2.0</h1>
 
@@ -23,10 +24,13 @@ TEST
     private bool isSignedIn = false;
     private string username = "User TEST100!";
 
-    protected override async void OnAfterRender(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
-        isSignedIn = AppState.IsSignedIn;
-        StateHasChanged();
+        if (isSignedIn != appState.IsSignedIn)
+        {
+            isSignedIn = appState.IsSignedIn;
+            StateHasChanged();
+        }
     }
 
 }

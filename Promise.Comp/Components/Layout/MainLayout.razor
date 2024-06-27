@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject ISessionStorage sessionStorage
+@inject AppState appState
 
 <div class="page">
     <div class="sidebar">
@@ -28,21 +29,36 @@
 </div>
 
 @code {
-    public bool IsSignedIn {get; set;} =  false;
+    public bool IsSignedIn { get; set; } = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         var username = await sessionStorage.GetAsync<string>("Username");
         var token = await sessionStorage.GetAsync<string>("Token");
         var userId = await sessionStorage.GetAsync<string>("UserId");
-        if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(userId))
+        if (!IsSignedIn)
         {
-            IsSignedIn = true;
-            AppState.IsSignedIn = true;
-            AppState.Username = username;
-            AppState.Token = token;
-            AppState.UserId = Convert.ToInt64(userId);
-            StateHasChanged();
+            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(userId))
+            {
+                IsSignedIn = true;
+                appState.IsSignedIn = true;
+                appState.Username = username;
+                appState.Token = token;
+                appState.UserId = Convert.ToInt64(userId);
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(token) || string.IsNullOrEmpty(userId))
+            {
+                IsSignedIn = false;
+                appState.Clean();
+                StateHasChanged();
+            }
         }
     }
+
+
+
 }
