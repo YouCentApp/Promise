@@ -3,6 +3,7 @@ namespace Promise.Api;
 
 public static class UserInfo
 {
+    [Obsolete]
     public static async Task<IResult> Run(HttpContext context, string? secret)
     {
         try

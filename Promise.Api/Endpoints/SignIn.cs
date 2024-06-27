@@ -2,6 +2,7 @@
 
 public static class SignIn
 {
+    [Obsolete]
     public static async Task<IResult> Run(HttpContext context, string? secret)
     {
         try

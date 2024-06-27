@@ -70,7 +70,9 @@ app.MapGet("/minversup", () =>
 app.MapPost("/signin", async (HttpContext context) =>
 {
     var secret = configuration["Jwt:Secret"];
+#pragma warning disable CS0612 // Type or member is obsolete
     return await SignIn.Run(context, secret);
+#pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<User>("application/json", "User data for Sign In")
 .WithOpenApi();
@@ -89,7 +91,9 @@ app.MapPost("/signup", async (HttpContext context) =>
 app.MapPost("/userinfo", async (HttpContext context) =>
 {
     var secret = configuration["Jwt:Secret"];
+#pragma warning disable CS0612 // Type or member is obsolete
     return await UserInfo.Run(context, secret);
+#pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<User>("application/json", "User data for User Info")
 .WithOpenApi();

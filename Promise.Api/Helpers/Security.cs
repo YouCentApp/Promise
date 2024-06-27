@@ -33,7 +33,7 @@ public static class Security
         return UnixEpoch.GetSecondsSince(DateTime.Now.AddHours(accessTokenLifetimeHours));
     }
 
-    //[Obsolete]
+    [Obsolete]
     public static string CreateBearerJwt(IDictionary<string, object> payload, string secret)
     {
         IJwtAlgorithm algorithm = new HMACSHA256Algorithm();
@@ -50,12 +50,15 @@ public static class Security
         return bearerJwt.LastIndexOf(bearerTokenPrefix, StringComparison.Ordinal) == 0;
     }
 
+    [Obsolete]
     public static IDictionary<string, object> GetBearerJwtLoad(string bearerJwt, string secret, bool verify = true)
     {
         var jwt = GetJwtFromBearerJwt(bearerJwt);
         var payload = GetJwtLoad(jwt, secret, verify);
         return payload;
     }
+
+    [Obsolete]
     public static bool ValidateBearerAccessToken(string bearerJwt, string login, string secret)
     {
         if (!ValidateBearerJwtPrefix(bearerJwt)) return false;
@@ -72,6 +75,7 @@ public static class Security
         return GetHash(GetHash(password) + salt);
     }
 
+    [Obsolete]
     private static IDictionary<string, object> GetJwtLoad(string jwt, string secret, bool verify)
     {
         IDictionary<string, object> payload = new Dictionary<string, object>();
@@ -126,10 +130,12 @@ public static class Security
     private static string GetSalt(int maximumSaltLength)
     {
         var salt = new byte[maximumSaltLength];
+#pragma warning disable SYSLIB0023 // Type or member is obsolete
         using (var random = new RNGCryptoServiceProvider())
         {
             random.GetNonZeroBytes(salt);
         }
+#pragma warning restore SYSLIB0023 // Type or member is obsolete
         return Convert.ToBase64String(salt); ;
     }
 
