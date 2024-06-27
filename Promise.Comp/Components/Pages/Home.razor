@@ -24,13 +24,10 @@ TEST
     private bool isSignedIn = false;
     private string username = "User TEST100!";
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnInitialized()
     {
-        if (isSignedIn != appState.IsSignedIn)
-        {
-            isSignedIn = appState.IsSignedIn;
-            StateHasChanged();
-        }
+        isSignedIn = appState.IsSignedIn;
+        StateHasChanged();
     }
 
 }
