@@ -94,8 +94,8 @@
                     var token = response.Headers.GetValues("Authorization").FirstOrDefault();
                     await sessionStorage.SetAsync("Token", token);
                     await sessionStorage.SetAsync("Username", username);
-                    await sessionStorage.SetAsync("UserId", responseObject.User.Id.ToString());
-                    navigationManager.NavigateTo("/");
+                    await sessionStorage.SetAsync("UserId", responseObject.Id);
+                    navigationManager.NavigateTo("/", forceLoad: true);
                 }
                 else
                 {
