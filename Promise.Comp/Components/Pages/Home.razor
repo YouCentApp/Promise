@@ -1,13 +1,32 @@
 ﻿@page "/"
 
-<h1>Hello, world! YouCent App 2.0!</h1>
+<h1>Welcome to YouCent App 2.0</h1>
 
 
-<div>
-    <img src="_content/Promise.Comp/images/ark.jpg" width="100" alt="Ark Image" />
+@if (isSignedIn)
+{
+    <p>Welcome, @username</p>
+}
+
+
+@* <div>
+<img src="_content/Promise.Comp/images/ark.jpg" width="100" alt="Ark Image" />
 </div>
 
 <br>
 
-TEST 
-<br>
+TEST
+<br> *@
+
+
+@code {
+    private bool isSignedIn = false;
+    private string username = "User TEST100!";
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        isSignedIn = AppState.IsSignedIn;
+        StateHasChanged();
+    }
+
+}

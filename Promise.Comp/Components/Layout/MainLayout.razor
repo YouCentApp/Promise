@@ -4,13 +4,13 @@
 <div class="page">
     <div class="sidebar">
 
-        <NavMenu IsSignedIn="@isSignedIn" />
+        <NavMenu IsSignedIn="@IsSignedIn" />
 
     </div>
 
     <main>
         <div class="top-row px-4">
-            @if (isSignedIn)
+            @if (IsSignedIn)
             {
                 <NavLink class="nav-link" href="/signout">Sign Out</NavLink>
             }
@@ -19,15 +19,16 @@
                 <NavLink class="nav-link" href="/signin">Sign In</NavLink>
             }
         </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
+        <CascadingValue Name="IsSignedIn" Value="IsSignedIn">
+            <article class="content px-4">
+                @Body
+            </article>
+        </CascadingValue>
     </main>
 </div>
 
 @code {
-    private bool isSignedIn = false;
+    public bool IsSignedIn {get; set;} =  false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -36,7 +37,11 @@
         var userId = await sessionStorage.GetAsync<string>("UserId");
         if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(userId))
         {
-            isSignedIn = true;
+            IsSignedIn = true;
+            AppState.IsSignedIn = true;
+            AppState.Username = username;
+            AppState.Token = token;
+            AppState.UserId = Convert.ToInt64(userId);
             StateHasChanged();
         }
     }

@@ -7,10 +7,13 @@
 @code {
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-
         await sessionStorage.RemoveAsync("Username");
         await sessionStorage.RemoveAsync("Token");
         await sessionStorage.RemoveAsync("UserId");
+        AppState.IsSignedIn = false;
+        AppState.Username = "";
+        AppState.UserId = 0;
+        AppState.Token = "";
         navigationManager.NavigateTo("/", forceLoad: true);
     }
 
