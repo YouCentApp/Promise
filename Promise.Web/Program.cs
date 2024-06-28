@@ -11,6 +11,7 @@ builder.Services.AddScoped<IMyEnvironment, MyEnvironment>();
 builder.Services.AddScoped<ISettings, Settings>();
 builder.Services.AddScoped<ISessionStorage, SessionStorage>();
 builder.Services.AddScoped<AppState>();
+builder.Services.AddScoped<INavigationManager, WebNavigationManager>();
 
 var app = builder.Build();
 
