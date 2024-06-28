@@ -1,5 +1,5 @@
 ﻿@page "/signin"
-@page "/signin/{signup}"
+@page "/signin/{action}"
 @using System.Text.Json
 @using System.Text
 @inject ISettings settings
@@ -43,7 +43,7 @@
 
 @code {
     [Parameter]
-    public string? signup { get; set; }
+    public string? action { get; set; }
     private string? username;
     private string? password;
     private string? errorMessage;
@@ -98,7 +98,7 @@
 
     private bool IsNewSignUp()
     {
-        return !string.IsNullOrEmpty(signup) && signup == "newsignup";
+        return !string.IsNullOrEmpty(action) && action == "newsignup";
     }
 
     private async Task TrySignInAsync()
