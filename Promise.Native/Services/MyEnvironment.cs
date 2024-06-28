@@ -1,9 +1,13 @@
 ﻿public class MyEnvironment : IMyEnvironment
 {
+
     public const string Prod = "Production";
     public const string Dev = "Development";
     public const string Unknown = "Unknown";
     public const string MauiEnviroment = "MAUI_ENVIRONMENT";
+
+    public bool IsNative() => true;
+    public bool IsWeb() => false;
 
     public bool IsDevelopment()
     {
@@ -17,4 +21,6 @@
     {
         return Environment.GetEnvironmentVariable(MauiEnviroment) ?? Unknown;
     }
+
+
 }

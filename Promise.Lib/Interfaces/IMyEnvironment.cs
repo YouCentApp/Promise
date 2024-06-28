@@ -3,4 +3,6 @@
     bool IsDevelopment();
     bool IsProduction();
     string GetEnvironment();
+    bool IsNative();
+    bool IsWeb();
 }

@@ -4,6 +4,9 @@
     public const string Dev = "Development";
     public const string Unknown = "Unknown";
 
+    public bool IsNative() => false;
+    public bool IsWeb() => true;
+
     public bool IsDevelopment()
     {
         return GetEnvironment() == Dev;
