@@ -5,4 +5,5 @@
     string GetEnvironment();
     bool IsNative();
     bool IsWeb();
+    bool IsCutOff();
 }

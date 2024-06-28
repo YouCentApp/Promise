@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inject AppState appState
+@inject NavigationManager navigationManager
 
 <h1>Welcome to YouCent App 2.0</h1>
 
@@ -28,6 +29,14 @@ TEST
     {
         isSignedIn = appState.IsSignedIn;
         StateHasChanged();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (appState.IsCutOff)
+        {
+            navigationManager.NavigateTo("/cutoff");
+        }
     }
 
 }

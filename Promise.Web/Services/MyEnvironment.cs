@@ -6,6 +6,7 @@
 
     public bool IsNative() => false;
     public bool IsWeb() => true;
+    public bool IsCutOff() => false;
 
     public bool IsDevelopment()
     {

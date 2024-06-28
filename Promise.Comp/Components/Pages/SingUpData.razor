@@ -5,6 +5,7 @@
 @inject NavigationManager navigationManager
 @inject ISessionStorage sessionStorage
 @inject ISettings settings
+@inject AppState appState
 
 
 <h1>Sign Up - Adding Optional Personal Data</h1>
@@ -37,6 +38,14 @@
     private string? SecretWord { get; set; }
     private string? errorMessage;
     private string api => settings.ApiUrl;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (appState.IsCutOff)
+        {
+            navigationManager.NavigateTo("/", forceLoad: true);
+        }
+    }
 
     private async Task SubmitForm()
     {

@@ -2,6 +2,7 @@
 @inject ISessionStorage sessionStorage
 @inject AppState appState
 @inject NavigationManager navigationManager
+@inject IMyEnvironment myEnvironment
 
 <div class="page">
     <div class="sidebar">
@@ -31,17 +32,33 @@
 
     private bool isSignedIn;
 
-    @* protected override void OnInitialized()
-{
-
-} *@
-
     protected override void OnAfterRender(bool firstRender)
     {
+        if (firstRender)
+        {
+            if (myEnvironment.IsNative())
+            {
+                if (myEnvironment.IsCutOff())
+                {
+                    appState.IsCutOff = true;
+                    navigationManager.NavigateTo("/cutoff");
+                    return;
+                }
+                else
+                {
+                    appState.IsCutOff = false;
+                }
+            }
+        }
+        if (appState.IsCutOff)
+        {
+            return;
+        }
         if (!isSignedIn && !appState.IsSignedInChecked && !appState.IsSignedInChecking)
         {
             appState.IsSignedInChecking = true;
             navigationManager.NavigateTo("/signin");
+            return;
         }
         if (appState.IsSignedInChecked && appState.IsSignedInChecking)
         {

@@ -8,6 +8,11 @@
 
     public bool IsNative() => true;
     public bool IsWeb() => false;
+    public bool IsCutOff()
+    {
+        var current = Connectivity.Current.NetworkAccess;
+        return current != NetworkAccess.Internet;
+    }
 
     public bool IsDevelopment()
     {

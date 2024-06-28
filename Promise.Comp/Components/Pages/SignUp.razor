@@ -5,6 +5,7 @@
 @inject NavigationManager navigationManager
 @inject ISettings settings
 @inject ISessionStorage sessionStorage
+@inject AppState appState
 
 <h1>Sign Up</h1>
 
@@ -37,6 +38,14 @@
     private string? confirmPassword;
     private string? errorMessage;
     private string api => settings.ApiUrl;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (appState.IsCutOff)
+        {
+            navigationManager.NavigateTo("/", forceLoad: true);
+        }
+    }    
 
     private async Task HandleSignUpAsync()
     {

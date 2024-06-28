@@ -52,16 +52,22 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if(appState.IsCutOff)
+        {
+            navigationManager.NavigateTo("/", forceLoad: true);
+        }
         if (IsNewSignUp())
         {
             username = await sessionStorage.GetAsync<string>("Username");
             StateHasChanged();
+            return;
         }
         else
         {
             if (appState.IsSignedIn)
             {
                 navigationManager.NavigateTo("/");
+                return;
             }
             else
             {

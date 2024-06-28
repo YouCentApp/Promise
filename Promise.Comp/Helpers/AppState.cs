@@ -6,6 +6,8 @@
 
     public bool IsSignedInChecked { get; set; }
 
+    public bool IsCutOff { get; set; }
+
     public long UserId { get; set; }
 
     public string? Username { get; set; }
