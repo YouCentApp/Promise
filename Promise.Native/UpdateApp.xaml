@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Promise.Native.UpdateApp"
+             Title="Update App"
+             Shell.NavBarIsVisible="False">
+    <VerticalStackLayout>
+        <Label
+            Text="Please update your YouCent App!"
+            VerticalOptions="Center"
+            HorizontalOptions="Center"
+            FontAttributes="Bold"
+            FontSize="Large"/>
+
+        <Button
+            Text="Update for Android"
+            Clicked="UpdateForAndroid"
+            BackgroundColor="#D3D800"
+            TextColor="Black"
+            Padding="20,15"
+            FontFamily="YouCentNunito"
+            Margin="10,10,10,0"/>
+
+        <Button
+            Text="Update for iOS"
+            Clicked="UpdateForiOS"
+            BackgroundColor="#D3D800"
+            TextColor="Black"
+            Padding="20,15"
+            FontFamily="YouCentNunito"
+            Margin="10,10,10,0"/>
+
+        <Button
+            Text="Update for Windows"
+            Clicked="UpdateForWindows"
+            BackgroundColor="#D3D800"
+            TextColor="Black"
+            Padding="20,15"
+            FontFamily="YouCentNunito"
+            Margin="10,10,10,0"/>
+
+        <Button
+            Text="Update for MacOS"
+            Clicked="UpdateForMacOS"
+            BackgroundColor="#D3D800"
+            TextColor="Black"
+            Padding="20,15"
+            FontFamily="YouCentNunito"
+            Margin="10,10,10,0"/>
+
+        <Button
+            Text="You can also use Web App!"
+            Clicked="UpdateForWeb"
+            BackgroundColor="#D3D800"
+            TextColor="Black"
+            Padding="20,15"
+            FontFamily="YouCentNunito"
+            Margin="10,10,10,0"/>
+
+
+        <Label
+            Margin="10,20,10,0"
+            Text="If you have any questions, please visit our website and contact us."
+            VerticalOptions="Center"
+            HorizontalOptions="Center"
+            FontSize="Medium"/>
+
+        <Button
+            Text="Visit Website"
+            Clicked="VisitWebsite"
+            BackgroundColor="#D3D800"
+            TextColor="Black"
+            Padding="20,15"
+            FontFamily="YouCentNunito"
+            Margin="10,10,10,0"/>
+
+    </VerticalStackLayout>
+</ContentPage>

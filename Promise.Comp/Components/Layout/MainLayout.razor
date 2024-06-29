@@ -1,0 +1,112 @@
+﻿@inherits LayoutComponentBase
+@using System.Text.Json
+@using System.Text
+@inject ISessionStorage sessionStorage
+@inject AppState appState
+@inject ISettings settings
+@inject NavigationManager navigationManager
+@inject IMyEnvironment myEnvironment
+@inject INavigationManager navigationManagerCrossplatform
+
+<div class="page">
+    <div class="sidebar">
+
+        <NavMenu IsSignedIn="@isSignedIn" />
+
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            @if (isSignedIn)
+            {
+                <NavLink class="nav-link" href="/signout">Sign Out</NavLink>
+            }
+            else
+            {
+                <NavLink class="nav-link" href="/signin">Sign In</NavLink>
+            }
+        </div>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+
+    private bool isSignedIn;
+    private string api => settings.ApiUrl;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (myEnvironment.IsNative())
+        {
+            if (await CheckIfNativeAppMustBeUpdated())
+            {
+                await navigationManagerCrossplatform.NavigateToAsync("UpdateApp");
+            }
+        }
+        if (firstRender)
+        {
+            if (myEnvironment.IsNative())
+            {
+                if (myEnvironment.IsCutOff())
+                {
+                    appState.IsCutOff = true;
+                    navigationManager.NavigateTo("/cutoff");
+                    return;
+                }
+                else
+                {
+                    appState.IsCutOff = false;
+                }
+            }
+        }
+        if (appState.IsCutOff)
+        {
+            return;
+        }
+        if (!isSignedIn && !appState.IsSignedInChecked && !appState.IsSignedInChecking)
+        {
+            appState.IsSignedInChecking = true;
+            navigationManager.NavigateTo("/signin");
+            return;
+        }
+        if (appState.IsSignedInChecked && appState.IsSignedInChecking)
+        {
+            appState.IsSignedInChecking = false;
+            isSignedIn = appState.IsSignedIn;
+            StateHasChanged();
+        }
+    }
+
+    private async Task<bool> CheckIfNativeAppMustBeUpdated()
+    {
+        var currentVersion = new
+        {
+            Major = AppVersion.Major,
+            Minor = AppVersion.Minor,
+            Build = AppVersion.Build
+        };
+        using var httpClient = new HttpClient();
+        var response = await httpClient.GetAsync($"{api}/minversup");
+        if (response.IsSuccessStatusCode)
+        {
+            var minimumVersion = await response.Content.ReadFromJsonAsync<AppMinimumVersion>();
+            if (minimumVersion is not null)
+            {
+                // Compare the current version with the minimum supported version
+                if (currentVersion.Major < minimumVersion.Major ||
+                (currentVersion.Major == minimumVersion.Major && currentVersion.Minor < minimumVersion.Minor) ||
+                (currentVersion.Major == minimumVersion.Major && currentVersion.Minor == minimumVersion.Minor && currentVersion.Build <
+                minimumVersion.Build))
+                {
+                    return true; // App must be updated
+                }
+            }
+        }
+        return false; // App does not need to be updated
+    }
+
+}

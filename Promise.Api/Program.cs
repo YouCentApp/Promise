@@ -1,9 +1,47 @@
+using Promise.Api;
+using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Please enter JWT with Bearer into field"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
+
+// Add DbContext to the DI container
+var configuration = builder.Configuration;
+var connectionString = configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<PromiseDb>(options => options.UseSqlServer(connectionString));
+var mailSettings = configuration.GetSection(nameof(MailSettings));
+builder.Services.Configure<MailSettings>(mailSettings);
 
 var app = builder.Build();
 
@@ -13,32 +51,69 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
-
-var summaries = new[]
+else
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    app.UseHttpsRedirection();
+}
 
-app.MapGet("/weatherforecast", () =>
+
+
+// MinVerSup endpoint. It checks if the version of the APP is supported.
+app.MapGet("/minversup", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    return new { major = 2, minor = 0, build = 0 };
 })
-.WithName("GetWeatherForecast")
 .WithOpenApi();
+
+
+// SignIn endpoint
+app.MapPost("/signin", async (HttpContext context) =>
+{
+    var secret = configuration["Jwt:Secret"];
+#pragma warning disable CS0612 // Type or member is obsolete
+    return await SignIn.Run(context, secret);
+#pragma warning restore CS0612 // Type or member is obsolete
+})
+.Accepts<User>("application/json", "User data for Sign In")
+.WithOpenApi();
+
+
+// SignUp endpoint
+app.MapPost("/signup", async (HttpContext context) =>
+{
+    return await SignUp.Run(context);
+})
+.Accepts<User>("application/json", "User data for Sign Up")
+.WithOpenApi();
+
+
+// UserInfo endpoint
+app.MapPost("/userinfo", async (HttpContext context) =>
+{
+    var secret = configuration["Jwt:Secret"];
+#pragma warning disable CS0612 // Type or member is obsolete
+    return await UserInfo.Run(context, secret);
+#pragma warning restore CS0612 // Type or member is obsolete
+})
+.Accepts<User>("application/json", "User data for User Info")
+.WithOpenApi();
+
+
+// DataUpdate endpoint
+app.MapPost("/dataupdate", async (HttpContext context) =>
+{
+    return await DataUpdate.Run(context);
+})
+.Accepts<UserData>("application/json", "User data for Data Update")
+.WithOpenApi();
+
+
+
+
+
+
+
+// RUN!
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

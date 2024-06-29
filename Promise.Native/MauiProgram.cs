@@ -11,15 +11,28 @@ public static class MauiProgram
 			.UseMauiApp<App>()
 			.ConfigureFonts(fonts =>
 			{
-				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+				fonts.AddFont("Nunito.ttf", "YouCentNunito");
 			});
 
 		builder.Services.AddMauiBlazorWebView();
 
+		builder.Services.AddScoped<IMyEnvironment, MyEnvironment>();
+		builder.Services.AddScoped<ISettings, Settings>();
+		builder.Services.AddScoped<ISessionStorage, SessionStorage>();
+		builder.Services.AddScoped<AppState>();
+		builder.Services.AddScoped<INavigationManager, NativeNavigationManager>();
+
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
+		Environment.SetEnvironmentVariable(MyEnvironment.MauiEnviroment, MyEnvironment.Dev);
 #endif
+
+#if RELEASE
+		Environment.SetEnvironmentVariable(MyEnvironment.MauiEnviroment, MyEnvironment.Prod);
+#endif
+
+		Environment.SetEnvironmentVariable(MyEnvironment.MauiEnviroment, MyEnvironment.Prod);
 
 		return builder.Build();
 	}

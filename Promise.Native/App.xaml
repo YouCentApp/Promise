@@ -3,24 +3,32 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Promise.Native"
              x:Class="Promise.Native.App">
-    <Application.Resources>
-        <ResourceDictionary>
+        <Application.Resources>
+                <ResourceDictionary>
 
-            <Color x:Key="PageBackgroundColor">#512bdf</Color>
-            <Color x:Key="PrimaryTextColor">White</Color>
+                        <Color x:Key="PageBackgroundColor">White</Color>
+                        <Color x:Key="AccentBackgroundColor">#D3D800</Color>
+                        <Color x:Key="PrimaryTextColor">#3AAA35</Color>
+                        <Color x:Key="AccentTextColor">Black</Color>
 
-            <Style TargetType="Label">
-                <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
-                <Setter Property="FontFamily" Value="OpenSansRegular" />
-            </Style>
+                        <Style TargetType="Label">
+                                <Setter Property="TextColor"
+                                        Value="{DynamicResource PrimaryTextColor}"/>
+                                <Setter Property="FontFamily"
+                                        Value="YouCentNunito"/>
+                        </Style>
 
-            <Style TargetType="Button">
-                <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
-                <Setter Property="FontFamily" Value="OpenSansRegular" />
-                <Setter Property="BackgroundColor" Value="#2b0b98" />
-                <Setter Property="Padding" Value="14,10" />
-            </Style>
+                        <Style TargetType="Button">
+                                <Setter Property="TextColor"
+                                        Value="{DynamicResource AccentTextColor}"/>
+                                <Setter Property="FontFamily"
+                                        Value="YouCentNunito"/>
+                                <Setter Property="BackgroundColor"
+                                        Value="{DynamicResource AccentBackgroundColor}"/>
+                                <Setter Property="Padding"
+                                        Value="20,15"/>
+                        </Style>
 
-        </ResourceDictionary>
-    </Application.Resources>
+                </ResourceDictionary>
+        </Application.Resources>
 </Application>

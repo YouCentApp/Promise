@@ -1,0 +1,191 @@
+﻿@page "/signin"
+@page "/signin/{action}"
+@using System.Text.Json
+@using System.Text
+@inject ISettings settings
+@inject ISessionStorage sessionStorage
+@inject NavigationManager navigationManager
+@inject AppState appState
+
+<h1>Sign In</h1>
+
+@if (IsNewSignUp())
+{
+    <div class="alert alert-success" role="alert">Thank you for signing up! You can now sign in.</div>
+}
+
+<div class="container">
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" class="form-control" @bind="username" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" class="form-control" @bind="password" />
+    </div>
+
+    <button class="btn btn-primary" @onclick="TrySignInAsync">Submit</button>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+
+    <div class="text-center mt-4">
+        <p>Don't have an account?
+            <a href="/signup" class="btn btn-link">Sign up</a>
+        </p>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? action { get; set; }
+    private string? username;
+    private string? password;
+    private string? errorMessage;
+    private string api => settings.ApiUrl;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(appState.IsCutOff)
+        {
+            navigationManager.NavigateTo("/", forceLoad: true);
+        }
+        if (IsNewSignUp())
+        {
+            username = await sessionStorage.GetAsync<string>("Username");
+            StateHasChanged();
+            return;
+        }
+        else
+        {
+            if (appState.IsSignedIn)
+            {
+                navigationManager.NavigateTo("/");
+                return;
+            }
+            else
+            {
+                if(!appState.IsSignedInChecked)
+                {
+                    var usernameStored = await sessionStorage.GetAsync<string>("Username");
+                    var tokenStored = await sessionStorage.GetAsync<string>("Token");
+                    var userIdStored = await sessionStorage.GetAsync<string>("UserId");
+                    if (!string.IsNullOrEmpty(usernameStored) && 
+                        !string.IsNullOrEmpty(tokenStored) && 
+                        !string.IsNullOrEmpty(userIdStored))
+                    {
+                        appState.IsSignedIn = true;
+                        appState.Username = usernameStored;
+                        appState.Token = tokenStored;
+                        appState.UserId = Convert.ToInt64(userIdStored);
+                    }
+                    else
+                    {
+                        appState.Clean();
+                    }
+                    CompleteSignIn();
+                }    
+            }
+        }
+    }
+    
+    private void CompleteSignIn()
+    {
+        appState.IsSignedInChecking = true;
+        appState.IsSignedInChecked = true;
+        navigationManager.NavigateTo("/"); 
+    }
+
+    private bool IsNewSignUp()
+    {
+        return !string.IsNullOrEmpty(action) && action == "newsignup";
+    }
+
+    private async Task TrySignInAsync()
+    {
+        ValidateForm();
+
+        if (string.IsNullOrEmpty(errorMessage))
+        {
+            if (string.IsNullOrEmpty(api))
+            {
+                MainLogger.LogError("API URL is not set.");
+                errorMessage = "Sorry, something went wrong. Please try again later.";
+                return;
+            }
+            var user = new User
+                {
+                    Login = username,
+                    Password = password
+                };
+            var json = JsonSerializer.Serialize(user);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.PostAsync($"{api}/signin", content);
+            var responseObject = await response.Content.ReadFromJsonAsync<ApiResponseUser>();
+
+            if (response.IsSuccessStatusCode)
+            {
+                if (responseObject is not null && responseObject.Success)
+                {
+                    var token = response.Headers.GetValues("Authorization").FirstOrDefault()?.Replace("Bearer ", "");
+                    await sessionStorage.SetAsync("Token", token);
+                    await sessionStorage.SetAsync("Username", username);
+                    await sessionStorage.SetAsync("UserId", responseObject.Id);
+                    var usernameStored = await sessionStorage.GetAsync<string>("Username");
+                    var tokenStored = await sessionStorage.GetAsync<string>("Token");
+                    var userIdStored = await sessionStorage.GetAsync<string>("UserId");
+                    if (!string.IsNullOrEmpty(usernameStored) && 
+                        !string.IsNullOrEmpty(tokenStored) && 
+                        !string.IsNullOrEmpty(userIdStored))
+                    {
+                        appState.IsSignedIn = true;
+                        appState.Username = usernameStored;
+                        appState.Token = tokenStored;
+                        appState.UserId = Convert.ToInt64(userIdStored);
+                        CompleteSignIn();
+                    }
+                    else
+                    {
+                        MainLogger.LogError(" Failed to store user data in session storage. Username: " + username + ", Token: " + token + ", UserId: " + responseObject.Id);
+                        errorMessage = "Sorry, something went wrong. Please try again later.";
+                    
+                    }
+                }
+                else
+                {
+                    MainLogger.LogError(responseObject?.Error ?? " | Failed to sign in (Success property is false). Username: " + username);
+                    errorMessage = responseObject?.Error ?? "Sorry, something went wrong. Please try again later.";
+                }
+            }
+            else
+            {
+                MainLogger.LogError(responseObject?.Error ?? " | Failed to sign in (Response is bad). Username: " + username);
+                errorMessage = responseObject?.Error ?? "Sorry, something went wrong. Please try again later.";
+            }
+        }
+    }
+
+    private void ValidateForm()
+    {
+        errorMessage = string.Empty;
+
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        {
+            errorMessage = "Please enter a username and password.";
+            return;
+        }
+        if (username?.Length > Policy.MaximumUsernameLength || password?.Length > Policy.MaximumPasswordLength)
+        {
+            errorMessage = "Username or/and password must be shorter.";
+            return;
+        }
+    }
+}

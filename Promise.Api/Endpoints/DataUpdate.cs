@@ -1,0 +1,104 @@
+﻿using Microsoft.EntityFrameworkCore;
+namespace Promise.Api;
+public static class DataUpdate
+{
+    public static async Task<IResult> Run(HttpContext context)
+    {
+        try
+        {
+            using var db = context.RequestServices.GetRequiredService<PromiseDb>();
+            UserData? userData = null;
+            try
+            {
+                userData = await context.Request.ReadFromJsonAsync<UserData>();
+            }
+            catch (Exception ex)
+            {
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                MainLogger.LogError("Error reading user and personal data from request : " + ex);
+                return Results.Json(new { success = false, error = "Server error..." });
+            }
+
+            var user = userData?.User;
+            if (userData is null || user is null || user.Id < 1 ||
+                string.IsNullOrWhiteSpace(user.Login) ||
+                string.IsNullOrWhiteSpace(user.Password))
+            {
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                MainLogger.LogError("Error reading user from user data update request");
+                return Results.Json(new { success = false, error = "No data or wrong data provided for User" });
+            }
+
+            var personalData = userData.PersonalData;
+            if (personalData is null)
+            {
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                MainLogger.LogError("Error reading personal data from personal data update request");
+                return Results.Json(new { success = false, error = "No data or wrong data provided for PersonalData" });
+            }
+
+            var dbUser = await db.Users.FirstOrDefaultAsync(u => u.Login == user.Login);
+            if (dbUser is null || dbUser.Password is null || dbUser.Salt is null || dbUser.Id != user.Id)
+            {
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                return Results.Json(new { success = false, error = "User not found or login and Id don't match" });
+            }
+            var hash = Security.GetPasswordHash(user.Password, dbUser.Salt);
+            if (hash != dbUser.Password)
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                return Results.Json(new { auth = false, error = "Wrong password!" });
+            }
+
+            var dbPersonalData = await db.PersonalData.FirstOrDefaultAsync(pd => pd.UserId == dbUser.Id);
+            if (dbPersonalData is null)
+            {
+                dbPersonalData = new PersonalData
+                {
+                    UserId = dbUser.Id,
+                    Email = "",
+                    Tel = "",
+                    Secret = "",
+                    EmailHash = "",
+                    TelHash = "",
+                    SecretHash = "",
+                    Salt = "",
+                    EmailMasked = "",
+                    TelMasked = ""
+                };
+                db.PersonalData.Add(dbPersonalData);
+            }
+            if (personalData.Email is not null)
+            {
+                dbPersonalData.Email = personalData.Email;
+            }
+            if (personalData.Tel is not null)
+            {
+                dbPersonalData.Tel = personalData.Tel;
+            }
+            if (personalData.Secret is not null)
+            {
+                dbPersonalData.Secret = personalData.Secret;
+            }
+            var records = await db.SaveChangesAsync();
+            if (records < 1)
+            {
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                MainLogger.LogError("Error saving personal data to DB");
+                return Results.Json(new { success = false, error = "Server error..." });
+            }
+            context.Response.StatusCode = StatusCodes.Status202Accepted;
+            return Results.Json(new ApiResponse
+            {
+                Success = true,
+                Error = ""
+            });
+        }
+        catch (Exception ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            MainLogger.LogError("Error updating user data : " + ex);
+            return Results.Json(new { success = false, error = "Server error..." });
+        }
+    }
+}

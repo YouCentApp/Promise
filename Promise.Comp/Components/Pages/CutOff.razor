@@ -1,0 +1,19 @@
+﻿@page "/cutoff"
+@inject NavigationManager navigationManager
+
+
+<h1>No Internet... Sorry :(</h1>
+
+<h3>Please connect and try again later!</h3>
+
+<p>
+    <button class="btn btn-primary" @onclick="Check">CHECK</button>
+</p>
+
+@code {
+    private void Check()
+    {
+        navigationManager.NavigateTo("/", forceLoad: true);
+    }
+
+}

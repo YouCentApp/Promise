@@ -1,6 +1,0 @@
-@Promise.Api_HostAddress = http://localhost:5014
-
-GET {{Promise.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
