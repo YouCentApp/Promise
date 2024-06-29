@@ -135,7 +135,7 @@
             {
                 if (responseObject is not null && responseObject.Success)
                 {
-                    var token = response.Headers.GetValues("Authorization").FirstOrDefault();
+                    var token = response.Headers.GetValues("Authorization").FirstOrDefault()?.Replace("Bearer ", "");
                     await sessionStorage.SetAsync("Token", token);
                     await sessionStorage.SetAsync("Username", username);
                     await sessionStorage.SetAsync("UserId", responseObject.Id);
