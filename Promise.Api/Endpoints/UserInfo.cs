@@ -27,8 +27,7 @@ public static class UserInfo
                 MainLogger.LogError("Error reading user from signin request : " + ex);
                 return Results.Json(new { success = false, error = "Server error..." });
             }
-            if (user is null || user.Login is null || user.Password is null ||
-                user.Login.Length < 1 || user.Password.Length < 1)
+            if (user is null || user.Login is null || user.Login.Length < 1)
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 return Results.Json(new { success = false, error = "No data or wrong data provided" });
