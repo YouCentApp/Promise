@@ -1,14 +1,41 @@
 ﻿@page "/"
+@using System.Net.Http.Headers
+@using System.Text
+@using System.Text.Json
+@using System.Net
 @inject AppState appState
 @inject NavigationManager navigationManager
 @inject IMyEnvironment myEnvironment
+@inject ISettings settings
 
 <h1>Welcome to YouCent App 2.0</h1>
 
-
 @if (isSignedIn)
 {
-    <p>Welcome, @username</p>
+    <h2>You signed in as <b>@username</b></h2>
+    <p>When you want someone to send you YouCent Promises (YCP), simply share your username above. It doesn't matter if
+        you use capital letters or not.</p>
+
+    <h2>Some important information</h2>
+    <h3>YouCent Promises (YCP) are not real money</h3>
+    <p>They are just promises you can get from others by selling them goods and services in order to buy things using
+        them in the future, and vice versa.</p>
+
+    <h3>Your Balance: @balance YCP</h3>
+    <p>When you promise someone else, your balance will decrease. When someone promises you, your balance will increase.
+    </p>
+
+    <h3>Your Promise Limit: @limit YCP</h3>
+    <p>You can promise up to this amount even when your balance is equal to zero. When you do it your balance become
+        negative for some time.</p>
+
+    <h3>You can promise up to @(limit + balance) YCP</h3>
+    <p>This is maximum amount you can promise at the moment. It is the sum of your balance and limit.</p>
+
+    @if (userInforError is not null)
+    {
+        <div class="alert alert-danger" role="alert">@userInforError</div>
+    }
 }
 
 
@@ -25,20 +52,84 @@ TEST
 
 @code {
     private bool isSignedIn = false;
-    private string username = "User TEST100!";
+    private string? username;
+    private bool isAuthError = false;
+    private string? userInforError;
+    private decimal balance;
+    private decimal limit;
+    private string api => settings.ApiUrl;
+    
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         isSignedIn = appState.IsSignedIn;
+        if (isSignedIn)
+        {
+            username = appState.Username;
+            ApiResponseUserInfo? userInfo = await GetUserInformation(username);
+            if (!isAuthError && userInfo is not null)
+            {
+                balance = userInfo.Balance;
+                limit = userInfo.PromiseLimit;
+            }
+        }
         StateHasChanged();
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
+        if (isAuthError)
+        {
+            navigationManager.NavigateTo("/signout");
+        }
         if (appState.IsCutOff)
         {
             navigationManager.NavigateTo("/cutoff");
         }
     }
 
+    private async Task<ApiResponseUserInfo?> GetUserInformation(string? username)
+    {
+        if (username is null)
+        {
+            isAuthError = true;
+            return null;
+        }
+        var user = new User { Login = username };
+        var json = JsonSerializer.Serialize(user);
+        var request = new HttpRequestMessage(HttpMethod.Post, $"{api}/userinfo");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", appState.Token);
+        request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        using var httpClient = new HttpClient();
+        var response = await httpClient.SendAsync(request);
+
+        var responseObject = await response.Content.ReadFromJsonAsync<ApiResponseUserInfo>();
+
+        if (response.IsSuccessStatusCode)
+        {
+            if (responseObject is not null && responseObject.Success)
+            {
+                return responseObject;
+            }
+            else
+            {
+                MainLogger.LogError("Error in GetUserInformation on Home page: " + responseObject?.Error);
+                userInforError = "Sorry, we couldn't get your information. Please try again later.";
+            }
+        }
+        else
+        {
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                isAuthError = true;
+            }
+            else
+            {
+                MainLogger.LogError("Error in GetUserInformation on Home page. Response code: " + response.StatusCode + ". Response error: " + responseObject?.Error);
+                userInforError = "Sorry, we couldn't get your information. Please try again later.";
+            }
+        }
+        return null;
+    }
 }
