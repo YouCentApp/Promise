@@ -34,7 +34,7 @@ public class DeleteUser
             return Results.Json(new { success = false, error = "Invalid JWT" });
         }
         using var db = context.RequestServices.GetRequiredService<PromiseDb>();
-        var dbUser = db.Users.FirstOrDefault(u => u.Login == user.Login);
+        var dbUser = db.Users.FirstOrDefault(u => u.Login == user.Login && u.Id == user.Id);
         if (dbUser is null || dbUser.Password is null || dbUser.Salt is null)
         {
             MainLogger.LogError("User not found for delete user request");
