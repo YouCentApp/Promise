@@ -3,7 +3,7 @@
 public static class SignIn
 {
     [Obsolete]
-    public static async Task<IResult> Run(HttpContext context, string? secret)
+    public static async Task<IResult> Run(HttpContext context, string? jwtSecret)
     {
         try
         {
@@ -38,7 +38,7 @@ public static class SignIn
                 return Results.Json(new { auth = false, error = "Wrong password!" });
             }
 
-            if (secret is null)
+            if (jwtSecret is null)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 MainLogger.LogError("No secret provided for JWT");
@@ -50,7 +50,7 @@ public static class SignIn
             { Security.PayLoadFieldAuth, true },
             { Security.PayLoadFieldExp, Security.GetAccessTokenLifetimeSeconds() }
         };
-            var token = Security.CreateBearerJwt(payload, secret);
+            var token = Security.CreateBearerJwt(payload, jwtSecret);
             context.Response.Headers.TryAdd(Security.AuthorizationHttpHeader, token);
             context.Response.StatusCode = StatusCodes.Status202Accepted;
             return Results.Json(new ApiResponseUser

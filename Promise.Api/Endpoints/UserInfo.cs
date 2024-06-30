@@ -4,14 +4,15 @@ namespace Promise.Api;
 public static class UserInfo
 {
     [Obsolete]
-    public static async Task<IResult> Run(HttpContext context, string? secret)
+    public static async Task<IResult> Run(HttpContext context, string? jwtSecret)
     {
         try
         {
             using var db = context.RequestServices.GetRequiredService<PromiseDb>();
             var jwt = context.Request.Headers[Security.AuthorizationHttpHeader].ToString();
-            if (jwt.Length < 1)
+            if (jwt is null || jwt.Length < 1)
             {
+                MainLogger.LogError("No token provided for user info request");
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return Results.Json(new { success = false, error = "No token provided" });
             }
@@ -33,13 +34,13 @@ public static class UserInfo
                 return Results.Json(new { success = false, error = "No data or wrong data provided" });
             }
 
-            if (secret is null)
+            if (jwtSecret is null)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 MainLogger.LogError("No secret provided for JWT");
                 return Results.Json(new { success = false, error = "Server error..." });
             }
-            if (!Security.ValidateBearerAccessToken(jwt, user.Login, secret))
+            if (!Security.ValidateBearerAccessToken(jwt, user.Login, jwtSecret))
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return Results.Json(new { success = false, error = "Invalid token" });
