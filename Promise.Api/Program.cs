@@ -56,6 +56,7 @@ else
     app.UseHttpsRedirection();
 }
 
+string? jwtSecret = configuration["Jwt:Secret"];
 
 
 // MinVerSup endpoint. It checks if the version of the APP is supported.
@@ -69,9 +70,9 @@ app.MapGet("/minversup", () =>
 // SignIn endpoint
 app.MapPost("/signin", async (HttpContext context) =>
 {
-    var secret = configuration["Jwt:Secret"];
+    //var secret = configuration["Jwt:Secret"];
 #pragma warning disable CS0612 // Type or member is obsolete
-    return await SignIn.Run(context, secret);
+    return await SignIn.Run(context, jwtSecret);
 #pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<User>("application/json", "User data for Sign In")
@@ -90,9 +91,9 @@ app.MapPost("/signup", async (HttpContext context) =>
 // UserInfo endpoint
 app.MapPost("/userinfo", async (HttpContext context) =>
 {
-    var secret = configuration["Jwt:Secret"];
+    //var secret = configuration["Jwt:Secret"];
 #pragma warning disable CS0612 // Type or member is obsolete
-    return await UserInfo.Run(context, secret);
+    return await UserInfo.Run(context, jwtSecret);
 #pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<User>("application/json", "User data for User Info")
@@ -107,6 +108,16 @@ app.MapPost("/dataupdate", async (HttpContext context) =>
 .Accepts<UserData>("application/json", "User data for Data Update")
 .WithOpenApi();
 
+
+// Delete User endpoint
+app.MapDelete("/deleteuser", async (HttpContext context) =>
+{
+#pragma warning disable CS0612 // Type or member is obsolete
+    return await DeleteUser.Run(context, jwtSecret);
+#pragma warning restore CS0612 // Type or member is obsolete
+})
+.Accepts<User>("application/json", "User data for Delete User")
+.WithOpenApi();
 
 
 
