@@ -109,7 +109,7 @@ app.MapPost("/dataupdate", async (HttpContext context) =>
 .WithOpenApi();
 
 
-// Delete User endpoint
+// DeleteUser endpoint
 app.MapDelete("/deleteuser", async (HttpContext context) =>
 {
 #pragma warning disable CS0612 // Type or member is obsolete
@@ -117,6 +117,17 @@ app.MapDelete("/deleteuser", async (HttpContext context) =>
 #pragma warning restore CS0612 // Type or member is obsolete
 })
 .Accepts<User>("application/json", "User data for Delete User")
+.WithOpenApi();
+
+
+// UpdatePassword endpoint
+app.MapPut("/updatepassword", async (HttpContext context) =>
+{
+#pragma warning disable CS0612 // Type or member is obsolete
+    return await UpdatePassword.Run(context, jwtSecret);
+#pragma warning restore CS0612 // Type or member is obsolete
+})
+.Accepts<UserUpdate>("application/json", "User data for Update Password")
 .WithOpenApi();
 
 
