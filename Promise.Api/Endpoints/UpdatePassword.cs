@@ -9,7 +9,7 @@ public class UpdatePassword
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             MainLogger.LogError("No secret provided for JWT");
-            return Results.Json(new { success = false, error = "Server error... Please try agein later." });
+            return Results.Json(new { success = false, error = "Server error... Please try again later." });
         }
         var userUpdate = await context.Request.ReadFromJsonAsync<UserUpdate>();
         if (userUpdate is null || userUpdate.OldUser is null || userUpdate.NewUser is null ||
