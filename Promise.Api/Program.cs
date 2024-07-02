@@ -131,6 +131,15 @@ app.MapPut("/updatepassword", async (HttpContext context) =>
 .WithOpenApi();
 
 
+// SendPromises endpoint
+app.MapPost("/sendpromises", async (HttpContext context) =>
+{
+#pragma warning disable CS0612 // Type or member is obsolete
+    return await SendPromises.Run(context, jwtSecret);
+#pragma warning restore CS0612 // Type or member is obsolete
+})
+.Accepts<UserTransaction>("application/json", "User data for Send Promises")
+.WithOpenApi();
 
 
 
