@@ -17,3 +17,13 @@ public class UserTransaction
     public int Cents { get; set; }
     public string? Memo { get; set; }
 }
+
+public class TransactionsHistory
+{
+    public User? User { get; set; }
+    public DateTime From { get; set; }
+    public DateTime To { get; set; }
+    public bool IsOldFirst { get; set; }
+    public int Limit { get; set; }
+    public int Offset { get; set; }
+}

@@ -142,6 +142,16 @@ app.MapPost("/sendpromises", async (HttpContext context) =>
 .WithOpenApi();
 
 
+// GetTransactions endpoint
+app.MapPost("/gettransactions", async (HttpContext context) =>
+{
+#pragma warning disable CS0612 // Type or member is obsolete
+    return await GetTransactions.Run(context, jwtSecret);
+#pragma warning restore CS0612 // Type or member is obsolete
+})
+.Accepts<TransactionsHistory>("application/json", "User data for Get Transactions")
+.WithOpenApi();
+
 
 
 // RUN!
