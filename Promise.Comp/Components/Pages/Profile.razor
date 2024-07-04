@@ -1,0 +1,71 @@
+﻿@page "/profile"
+@inject AppState appState
+@inject NavigationManager navigationManager
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h1>Profile</h1>
+
+            <p>Here you can update your personal data, password, or delete your account.</p>
+
+            <p>Your Username: @username</p>
+
+            <p>Your ID: @userId</p>
+
+            <p>You can give your Username to others in order for them to send you Promises, but don't share your ID.</p>
+        </div>
+    </div>
+</div>
+
+<div class="text-center">
+    <div class="btn-group-vertical" role="group" aria-label="Profile Actions">
+        <br />
+        <br />
+        <p>What would you like to do?</p>
+        <br />
+        <br />
+        <button type="button" class="btn btn-primary" @onclick="UpdatePassword">Update Password</button>
+        <br />
+        <br />
+        <button type="button" class="btn btn-secondary" @onclick="UpdatePersonalData">Update Personal Data</button>
+        <br />
+        <br />
+        <button type="button" class="btn btn-danger" @onclick="DeleteAccount">Delete Account</button>
+    </div>
+</div>
+
+
+
+@code {
+
+    private string? username;
+    private long? userId;
+
+    protected override void OnInitialized()
+    {
+        if (!appState.IsSignedIn)
+        {
+            navigationManager.NavigateTo("signin");
+        }
+        username = appState.Username;
+        userId = appState.UserId;
+    }
+
+    private void UpdatePassword()
+    {
+        navigationManager.NavigateTo("updatepassword");
+    }
+
+    private void UpdatePersonalData()
+    {
+        navigationManager.NavigateTo("updatepersonaldata");
+    }
+
+    private void DeleteAccount()
+    {
+        navigationManager.NavigateTo("deleteaccount");
+    }
+
+}

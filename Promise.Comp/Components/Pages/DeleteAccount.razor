@@ -1,0 +1,26 @@
+﻿@page "/deleteaccount"
+@inject AppState appState
+@inject NavigationManager navigationManager
+
+<h1>DeleteAccount</h1>
+
+
+
+@code {
+
+    private string? username;
+    private long? userId;
+
+    protected override void OnInitialized()
+    {
+        if (!appState.IsSignedIn)
+        {
+            navigationManager.NavigateTo("signin");
+        }
+        username = appState.Username;
+        userId = appState.UserId;
+    }
+
+
+
+}

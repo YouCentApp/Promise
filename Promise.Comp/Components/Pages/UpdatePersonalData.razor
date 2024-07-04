@@ -1,0 +1,23 @@
+﻿@page "/updatepersonaldata"
+@inject AppState appState
+@inject NavigationManager navigationManager
+
+<h1>UpdatePersonalData</h1>
+
+
+
+@code {
+    private string? username;
+    private long? userId;
+
+    protected override void OnInitialized()
+    {
+        if (!appState.IsSignedIn)
+        {
+            navigationManager.NavigateTo("signin");
+        }
+        username = appState.Username;
+        userId = appState.UserId;
+    }
+
+}

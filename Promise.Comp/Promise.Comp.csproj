@@ -19,5 +19,13 @@
     <ProjectReference Include="..\Promise.Lib\Promise.Lib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Components/Pages/Profile.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components/Pages/Profile.razor" />
+  </ItemGroup>
+
 
 </Project>
