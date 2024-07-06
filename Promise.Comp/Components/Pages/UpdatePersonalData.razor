@@ -1,14 +1,73 @@
 ﻿@page "/updatepersonaldata"
+@using System.Text.Json
+@using System.Text
 @inject AppState appState
 @inject NavigationManager navigationManager
+@inject ISettings settings
 
-<h1>UpdatePersonalData</h1>
+<h1>Update Personal Data</h1>
+
+<h2>Chose what you want to update by checking a box. If you want to remove previously stored data, just leave the field
+    as it is after checking the box.</h2>
 
 
+<div>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" id="email" placeholder="Enter email" @bind="email"
+            disabled="@(!isEmailEnabled)" />
+        <input type="checkbox" @bind="isEmailEnabled" />
+    </div>
+    <div class="form-group">
+        <label for="telephone">Telephone</label>
+        <input type="tel" class="form-control" id="telephone" placeholder="Enter telephone" @bind="telephone"
+            disabled="@(!isTelephoneEnabled)" />
+        <input type="checkbox" @bind="isTelephoneEnabled" />
+    </div>
+    <div class="form-group">
+        <label for="secretWord">Secret Word</label>
+        <input type="password" class="form-control" id="secretWord" placeholder="Enter secret word" @bind="secretWord"
+            disabled="@(!isSecretWordEnabled)" />
+        <input type="checkbox" @bind="isSecretWordEnabled" />
+    </div>
+    <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" class="form-control" id="confirmPassword" placeholder="Enter password to confirm"
+            @bind="confirmPassword" />
+    </div>
+    <button type="submit" class="btn btn-primary" @onclick="SaveData">Save</button>
+</div>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+    @errorMessage
+</div>
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success" role="alert">
+    @successMessage
+</div>
+}
+
+<h3>Please note that if you update (or remove) e-mail you will not be automatically unsubscribed from the newsletter.
+    You cen do it from any e-mail you get.</h3>
+<p>Also you will not be subscribed to the newsletter with the new e-mail. You can do it manually on the website or by
+    contacting us</p>
 
 @code {
-    private string? username;
-    private long? userId;
+    private string? email;
+    private string? telephone;
+    private string? secretWord;
+    private string? confirmPassword;
+    private bool isEmailEnabled;
+    private bool isTelephoneEnabled;
+    private bool isSecretWordEnabled;
+    private string? errorMessage;
+    private string? successMessage;
+    private string api => settings.ApiUrl;
 
     protected override void OnInitialized()
     {
@@ -16,8 +75,59 @@
         {
             navigationManager.NavigateTo("signin");
         }
-        username = appState.Username;
-        userId = appState.UserId;
     }
 
+    private async Task SaveData()
+    {
+        if (string.IsNullOrEmpty(confirmPassword))
+        {
+            errorMessage = "Please enter your password!";
+            return;
+        }
+        if (string.IsNullOrEmpty(api))
+        {
+            MainLogger.LogError("API URL is not set.");
+            errorMessage = "Sorry, something went wrong. Please try again later.";
+            return;
+        }
+        var user = new User
+            {
+                Id = appState.UserId,
+                Login = appState.Username,
+                Password = confirmPassword
+            };
+        var personalData = new PersonalData
+            {
+                Email = isEmailEnabled ? email : null,
+                Tel = isTelephoneEnabled ? telephone : null,
+                Secret = isSecretWordEnabled ? secretWord : null
+            };
+        var userData = new UserData
+            {
+                User = user,
+                PersonalData = personalData
+            };
+        var json = JsonSerializer.Serialize(userData);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        using var httpClient = new HttpClient();
+        var response = await httpClient.PutAsync($"{api}/dataupdate", content);
+        var responseObject = await response.Content.ReadFromJsonAsync<ApiResponseUser>();
+        if (response.IsSuccessStatusCode)
+        {
+            if (responseObject is not null && responseObject.Success)
+            {
+                successMessage = "Perspnal Data updated successfully!";
+            }
+            else
+            {
+                MainLogger.LogError("Error updating personal data for user ID: " + appState.UserId);
+                errorMessage = "Sorry, something went wrong. Please try again later.";
+            }
+        }
+        else
+        {
+            MainLogger.LogError("Error updating personal data for user ID:" + appState.UserId);
+            errorMessage = "Sorry, something went wrong. Please try again later.";
+        }
+    }
 }

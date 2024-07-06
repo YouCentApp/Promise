@@ -101,7 +101,7 @@ app.MapPost("/userinfo", async (HttpContext context) =>
 
 
 // DataUpdate endpoint
-app.MapPost("/dataupdate", async (HttpContext context) =>
+app.MapPut("/dataupdate", async (HttpContext context) =>
 {
     return await DataUpdate.Run(context);
 })
