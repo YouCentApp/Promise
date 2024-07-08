@@ -79,6 +79,8 @@
 
     private async Task SaveData()
     {
+        errorMessage = null;
+        successMessage = null;
         if (string.IsNullOrEmpty(confirmPassword))
         {
             errorMessage = "Please enter your password!";
@@ -120,14 +122,16 @@
             }
             else
             {
-                MainLogger.LogError("Error updating personal data for user ID: " + appState.UserId);
-                errorMessage = "Sorry, something went wrong. Please try again later.";
+                errorMessage = "Sorry, something went wrong. Please try again later. Possible reason: "
+                + responseObject?.Error ??
+                "Unknown error...";
             }
         }
         else
         {
-            MainLogger.LogError("Error updating personal data for user ID:" + appState.UserId);
-            errorMessage = "Sorry, something went wrong. Please try again later.";
+            errorMessage = "Sorry, something went wrong. Please try again later. Possible reason: "
+            + responseObject?.Error ??
+            "Unknown error...";
         }
     }
 }
