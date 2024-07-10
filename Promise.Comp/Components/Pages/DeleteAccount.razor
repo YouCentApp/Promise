@@ -25,7 +25,7 @@
 
 <div class="form-group">
     <label for="username">Password:</label>
-    <input type="text" class="form-control" @bind="passwordConfirmed" />
+    <input type="password" class="form-control" @bind="passwordConfirmed" />
 </div>
 
 
@@ -64,9 +64,9 @@
     private async Task DeleteAccountAsync()
     {
         errorMessage = null;
-        if (usernameConfirmed is not null && userId is not null && lastDigits is not null && passwordConfirmed is not null &&
-        username is not null
-        && usernameConfirmed == username && userId.ToString().EndsWith(lastDigits) && passwordConfirmed.Length == 0)
+        if (usernameConfirmed is not null && userId is not null && lastDigits is not null 
+        && passwordConfirmed is not null && username is not null && usernameConfirmed == username 
+        && userId.ToString().EndsWith(lastDigits) && passwordConfirmed.Length > 0)
         {
             if (string.IsNullOrEmpty(api))
             {
