@@ -1,15 +1,55 @@
 ﻿@page "/deleteaccount"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
 @inject AppState appState
 @inject NavigationManager navigationManager
+@inject ISettings settings
 
 <h1>DeleteAccount</h1>
 
+<p>Username: @username</p>
+<p>ID: @userId</p>
+
+<p>Are you sure you want to delete your account?</p>
+
+<div class="form-group">
+    <label for="username">Username:</label>
+    <input type="text" class="form-control" @bind="usernameConfirmed" />
+</div>
+
+<div class="form-group">
+    <label for="lastDigits">Last 3 digits of ID:</label>
+    <input type="text" class="form-control" @bind="lastDigits" />
+</div>
+
+<div class="form-group">
+    <label for="username">Password:</label>
+    <input type="text" class="form-control" @bind="passwordConfirmed" />
+</div>
+
+
+<button type="button" class="btn btn-danger" @onclick="DeleteAccountAsync">Delete Account</button>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+    @errorMessage
+</div>
+}
 
 
 @code {
 
     private string? username;
     private long? userId;
+    private string? lastDigits;
+    private string? usernameConfirmed;
+    private string? passwordConfirmed;
+    private string api => settings.ApiUrl;
+
+
+    private string? errorMessage;
 
     protected override void OnInitialized()
     {
@@ -19,6 +59,123 @@
         }
         username = appState.Username;
         userId = appState.UserId;
+    }
+
+    private async Task DeleteAccountAsync()
+    {
+        errorMessage = null;
+        if (usernameConfirmed is not null && userId is not null && lastDigits is not null && passwordConfirmed is not null
+        && usernameConfirmed == username && userId.ToString().EndsWith(lastDigits) && passwordConfirmed.Length == 0)
+        {
+            if (string.IsNullOrEmpty(api))
+            {
+                MainLogger.LogError("API URL is not set.");
+                errorMessage = "Sorry, something went wrong. Please try again later.";
+                return;
+            }
+            var user = new User
+                {
+                    Id = userId ?? 0,
+                    Login = usernameConfirmed ?? string.Empty,
+                    Password = passwordConfirmed ?? string.Empty
+                };
+            try
+            {
+                var json = JsonSerializer.Serialize(user);
+                var request = new HttpRequestMessage(HttpMethod.Delete, $"{api}/deleteuser");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", appState.Token);
+                request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                using var httpClient = new HttpClient();
+                var response = await httpClient.SendAsync(request);
+                var responseObject = await response.Content.ReadFromJsonAsync<ApiResponse>();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    if (responseObject is not null && responseObject.Success)
+                    {
+                        navigationManager.NavigateTo("signout");
+                    }
+                    else
+                    {
+                        errorMessage = "Sorry, something went wrong. Please try again later. Possible reason: "
+                        + responseObject?.Error ??
+                        "Unknown error...";
+                    }
+                }
+                else
+                {
+                    MainLogger.LogError($"An error occurred while deleting account. Username: {username}. Status code: " +
+                    response.StatusCode);
+                    errorMessage = "An error occurred while deleting your account. Possible reason: "
+                    + responseObject?.Error ?? "Unknown error...";
+                }
+            }
+            catch (Exception ex)
+            {
+                MainLogger.LogError($"An error occurred while deleting account. Username: {username}. Exception: " + ex.Message);
+                errorMessage = "An error occurred while deleting your account.";
+            }
+        }
+        else
+        {
+            errorMessage = "Username or ID is incorrect";
+        }
+        {
+            if (string.IsNullOrEmpty(api))
+            {
+                MainLogger.LogError("API URL is not set.");
+                errorMessage = "Sorry, something went wrong. Please try again later.";
+                return;
+            }
+            var user = new User
+                {
+                    Id = userId ?? 0,
+                    Login = usernameConfirmed ?? string.Empty,
+                    Password = passwordConfirmed ?? string.Empty
+                };
+            try
+            {
+                var json = JsonSerializer.Serialize(user);
+                var request = new HttpRequestMessage(HttpMethod.Delete, $"{api}/deleteuser");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", appState.Token);
+                request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                using var httpClient = new HttpClient();
+                var response = await httpClient.SendAsync(request);
+                var responseObject = await response.Content.ReadFromJsonAsync<ApiResponse>();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    if (responseObject is not null && responseObject.Success)
+                    {
+                        navigationManager.NavigateTo("signout");
+                    }
+                    else
+                    {
+                        errorMessage = "Sorry, something went wrong. Please try again later. Possible reason: "
+                        + responseObject?.Error ??
+                        "Unknown error...";
+                    }
+                }
+                else
+                {
+                    MainLogger.LogError($"An error occurred while deleting account. Username: {username}. Status code: " +
+                    response.StatusCode);
+                    errorMessage = "An error occurred while deleting your account. Possible reason: "
+                    + responseObject?.Error ?? "Unknown error...";
+                }
+            }
+            catch (Exception ex)
+            {
+                MainLogger.LogError($"An error occurred while deleting account. Username: {username}. Exception: " + ex.Message);
+                errorMessage = "An error occurred while deleting your account.";
+            }
+        }
+else
+        {
+            errorMessage = "Username or ID is incorrect, or password is not entered.";
+        }
     }
 
 
