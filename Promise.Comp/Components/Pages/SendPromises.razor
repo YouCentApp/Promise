@@ -54,6 +54,16 @@
     private string? errorMessage;
 
 
+    protected override void OnInitialized()
+    {
+        if (!appState.IsSignedIn)
+        {
+            navigationManager.NavigateTo("signin");
+        }
+        username = appState.Username;
+        userId = appState.UserId;
+    }
+
     private async Task SendPrommisesAsync()
     {
         errorMessage = null;
@@ -73,13 +83,13 @@
             {
                 Login = username,
                 Password = password,
-                UserId = userId
+                Id = userId
             };
-        var receiver = new Receiver
+        var receiver = new User
             {
                 Login = beneficiary
             };
-        var transaction = new Transaction
+        var transaction = new UserTransaction
             {
                 Sender = user,
                 Receiver = receiver,
