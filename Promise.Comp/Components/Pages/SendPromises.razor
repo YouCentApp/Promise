@@ -45,8 +45,8 @@
 @code {
 
     private string? username;
-    private long? userId;
-    private decimal? cents;
+    private long userId;
+    private long cents;
     private string? beneficiary;
     private string? memo;
     private string? password;
@@ -68,7 +68,7 @@
     {
         errorMessage = null;
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password)
-        || userId is not null || cents is not null and > 0 || string.IsNullOrEmpty(beneficiary))
+        || cents < 1 || string.IsNullOrEmpty(beneficiary))
         {
             errorMessage = "Please fill in all fields please!";
             return;
@@ -93,7 +93,7 @@
             {
                 Sender = user,
                 Receiver = receiver,
-                Amount = cents,
+                Cents = cents,
                 Memo = memo
             };
         try

@@ -14,7 +14,7 @@ public class UserTransaction
 {
     public User? Sender { get; set; }
     public User? Receiver { get; set; }
-    public int Cents { get; set; }
+    public long Cents { get; set; }
     public string? Memo { get; set; }
 }
 

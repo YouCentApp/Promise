@@ -42,7 +42,7 @@
 @code {
 
     private string? username;
-    private long? userId;
+    private long userId;
     private string? lastDigits;
     private string? usernameConfirmed;
     private string? passwordConfirmed;
@@ -64,10 +64,17 @@
     private async Task DeleteAccountAsync()
     {
         errorMessage = null;
-        if (usernameConfirmed is not null && userId is not null && lastDigits is not null 
-        && passwordConfirmed is not null && username is not null && usernameConfirmed == username 
-        && userId.ToString().EndsWith(lastDigits) && passwordConfirmed.Length > 0)
+        if (usernameConfirmed is not null
+        && passwordConfirmed is not null
+        && username is not null
+        && usernameConfirmed == username
+        && passwordConfirmed.Length > 0)
         {
+            if (lastDigits is null || !userId.ToString().EndsWith(lastDigits))
+            {
+                errorMessage = "ID is incorrect.";
+                return;
+            }
             if (string.IsNullOrEmpty(api))
             {
                 MainLogger.LogError("API URL is not set.");
@@ -76,7 +83,7 @@
             }
             var user = new User
                 {
-                    Id = userId ?? 0,
+                    Id = userId,
                     Login = usernameConfirmed ?? string.Empty,
                     Password = passwordConfirmed ?? string.Empty
                 };
@@ -120,7 +127,7 @@
         }
         else
         {
-            errorMessage = "Username or ID is incorrect, or password is not entered.";
+            errorMessage = "Username is incorrect or password is not entered.";
         }
     }
 
