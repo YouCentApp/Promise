@@ -24,7 +24,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components/Pages/History.razor" />
     <_ContentIncludedByDefault Remove="Components/Pages/Profile.razor" />
+    <_ContentIncludedByDefault Remove="Components/Pages/Promise.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Components/Pages/Promise.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Components/Pages/History.razor" />
   </ItemGroup>
 
 
