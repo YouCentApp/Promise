@@ -1,7 +1,102 @@
 ﻿@page "/transactionshistory"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+@inject AppState appState
+@inject NavigationManager navigationManager
+@inject ISettings settings
 
 <h1>Transactions History</h1>
 
-@code {
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var transaction in transactions)
+                    {
+                        <tr>
+                            <td>@transaction.Id</td>
+                            @if (@transaction.ReceiverLogin == username)
 
+                            {
+                                <td>@transaction.SenderLogin</td>
+                                <td><span class="text-success">+@transaction.Cents</span></td>
+                            }
+                            else
+                            {
+                                <td>@transaction.ReceiverLogin</td>
+                                <td><span class="text-danger">-@transaction.Cents</span></td>
+                            }
+                            <td>@transaction.Date</td>
+                            <td>@transaction.Memo</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-primary" @onclick="SortByDateAsc">Sort by Date Asc</button>
+                <button class="btn btn-primary" @onclick="SortByDateDesc">Sort by Date Desc</button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between">
+                <a href="/transactionshistory?offset=@(offset - 10)">Previous Page</a>
+                <a href="/transactionshistory?offset=@(offset + 10)">Next Page</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<SimpleUserTransaction> transactions;
+    private int offset;
+    private string? username;
+    private int limit = 10;
+    private DateTime from = DateTime.Now - TimeSpan.FromDays(3650);
+    private DateTime to = DateTime.Now;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!appState.IsSignedIn)
+        {
+            navigationManager.NavigateTo("signin");
+        }
+        username = appState.Username;
+
+        // Fetch transactions data from the server using an API call or database query
+        transactions = await FetchTransactions(offset);
+    }
+
+    private async Task<List<SimpleUserTransaction>> FetchTransactions(int offset)
+    {
+        // Implement the logic to fetch transactions data from the server using an API call or database query
+        // Use the offset parameter to determine the starting index of the transactions to fetch
+        // Return the list of transactions
+    }
+
+    private void SortByDateAsc()
+    {
+        // Implement the logic to sort the transactions by date in ascending order
+    }
+
+    private void SortByDateDesc()
+    {
+        // Implement the logic to sort the transactions by date in descending order
+    }
 }

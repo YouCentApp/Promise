@@ -1,4 +1,7 @@
-﻿namespace Promise.Api;
+﻿using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Tsp;
+
+namespace Promise.Api;
 
 public class GetTransactions
 {
@@ -45,21 +48,34 @@ public class GetTransactions
             }
 
             var transactions = db.PromiseTransactions
-                .Where(t => t.SenderId == user.Id || t.ReceiverId == user.Id)
-                .Where(t => t.Date >= transactionsHistory.From && t.Date <= transactionsHistory.To);
+                .Join(db.Users, t => t.SenderId, u => u.Id, (t, us) => new { t, us })
+                .Join(db.Users, ts => ts.t.ReceiverId, u => u.Id, (ts, ur) => new { ts, ur })
+                .Where(ts => ts.ts.t.SenderId == user.Id || ts.ts.t.ReceiverId == user.Id)
+                .Where(ts => ts.ts.t.Date >= transactionsHistory.From && ts.ts.t.Date <= transactionsHistory.To)
+                ;
 
             if (transactionsHistory.IsOldFirst)
             {
-                transactions = transactions.OrderBy(t => t.Date);
+                transactions = transactions.OrderBy(ts => ts.ts.t.Date);
             }
             else
             {
-                transactions = transactions.OrderByDescending(t => t.Date);
+                transactions = transactions.OrderByDescending(ts => ts.ts.t.Date);
             }
 
             var retrievedTransactions = transactions
             .Skip(transactionsHistory.Offset)
-            .Take(transactionsHistory.Limit).ToList();
+            .Take(transactionsHistory.Limit)
+            .Select(ts => new SimpleUserTransaction()
+            {
+                Id = ts.ts.t.Id,
+                SenderLogin = ts.ts.us.Login,
+                ReceiverLogin = ts.ur.Login,
+                Cents = ts.ts.t.Cents,
+                Date = ts.ts.t.Date,
+                Memo = ts.ts.t.Memo
+            }).ToList()
+            ;
 
             return Results.Json(new ApiResponseUserTransactions
             {
