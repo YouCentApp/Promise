@@ -46,7 +46,7 @@
 
     private string? username;
     private long userId;
-    private long cents;
+    private int cents;
     private string? beneficiary;
     private string? memo;
     private string? password;
@@ -98,7 +98,7 @@
             };
         try
         {
-            var json = JsonSerializer.Serialize(user);
+            var json = JsonSerializer.Serialize(transaction);
             var request = new HttpRequestMessage(HttpMethod.Post, $"{api}/sendpromises");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", appState.Token);
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
