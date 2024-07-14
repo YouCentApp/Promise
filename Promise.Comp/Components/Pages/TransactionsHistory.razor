@@ -18,6 +18,7 @@
                         <th>Username</th>
                         <th>Amount</th>
                         <th>Date</th>
+                        <th>Memo</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,20 +56,32 @@
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex justify-content-between">
-                <a href="/transactionshistory?offset=@(offset - 10)">Previous Page</a>
-                <a href="/transactionshistory?offset=@(offset + 10)">Next Page</a>
+                @if (offset > 0)
+                {
+                    <button class="btn btn-primary" @onclick="GoBack">Previous Page</button>
+                }
+                <button class="btn btn-primary" @onclick="GoForward">Next Page</button>
             </div>
         </div>
     </div>
 </div>
 
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+    @errorMessage
+</div>
+}
+
 @code {
-    private List<SimpleUserTransaction> transactions;
+    private List<SimpleUserTransaction> transactions = [];
     private int offset;
     private string? username;
     private int limit = 10;
-    private DateTime from = DateTime.Now - TimeSpan.FromDays(3650);
+    private DateTime from = DateTime.Now - TimeSpan.FromDays(5000);
     private DateTime to = DateTime.Now;
+    private string api => settings.ApiUrl;
+    private string? errorMessage;
 
 
     protected override async Task OnInitializedAsync()
@@ -79,15 +92,70 @@
         }
         username = appState.Username;
 
-        // Fetch transactions data from the server using an API call or database query
-        transactions = await FetchTransactions(offset);
+        if (string.IsNullOrEmpty(api))
+        {
+            MainLogger.LogError("API URL is not set.");
+            errorMessage = "Sorry, something went wrong. Please try again later.";
+            return;
+        }
+
+        transactions = await FetchTransactions();
+        if (transactions.Count == 0)
+        {
+            errorMessage = "No transactions found.";
+        }
     }
 
-    private async Task<List<SimpleUserTransaction>> FetchTransactions(int offset)
+    private async Task<List<SimpleUserTransaction>> FetchTransactions()
     {
-        // Implement the logic to fetch transactions data from the server using an API call or database query
-        // Use the offset parameter to determine the starting index of the transactions to fetch
-        // Return the list of transactions
+        List<SimpleUserTransaction> transactions = [];
+        var transactionsHistoryInfo = new TransactionsHistoryInfo
+            {
+                User = new User
+                {
+                    Login = username
+                },
+                Limit = limit,
+                Offset = offset,
+                From = from,
+                To = to
+            };
+        try
+        {
+            var json = JsonSerializer.Serialize(transactionsHistoryInfo);
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{api}/gettransactions");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", appState.Token);
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.SendAsync(request);
+            var responseObject = await response.Content.ReadFromJsonAsync<ApiResponseUserTransactions>();
+
+            if (response.IsSuccessStatusCode)
+            {
+                if (responseObject is not null && responseObject.Success && responseObject.Transactions is not null)
+                {
+                    transactions = responseObject.Transactions;
+                    return transactions;
+                }
+                else
+                {
+                    MainLogger.LogError($"An error occurred while getting transactions history. Username: {username}.");
+                }
+            }
+            else
+            {
+                MainLogger.LogError($"An error occurred while getting transactions history. Username: {username}. Status code: " +
+                response.StatusCode);
+            }
+        }
+        catch (Exception ex)
+        {
+            MainLogger.LogError($"An error occurred while getting transactions history. Username: {username}. Exception: " +
+            ex.Message);
+        }
+
+        return transactions;
     }
 
     private void SortByDateAsc()
@@ -98,5 +166,16 @@
     private void SortByDateDesc()
     {
         // Implement the logic to sort the transactions by date in descending order
+    }
+
+    private void GoBack()
+    {
+        // Implement the logic to navigate to the previous page of transactions
+    }
+
+    private async Task GoForward()
+    {
+        offset += limit;
+        transactions = await FetchTransactions();
     }
 }
