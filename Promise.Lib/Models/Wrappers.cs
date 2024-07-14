@@ -18,7 +18,7 @@ public class UserTransaction
     public string? Memo { get; set; }
 }
 
-public class TransactionsHistory
+public class TransactionsHistoryInfo
 {
     public User? User { get; set; }
     public DateTime From { get; set; }

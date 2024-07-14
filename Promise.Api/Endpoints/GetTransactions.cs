@@ -16,7 +16,7 @@ public class GetTransactions
                 MainLogger.LogError("No secret provided for JWT");
                 return Results.Json(new { success = false, error = "Server error... Please try again later." });
             }
-            var transactionsHistory = await context.Request.ReadFromJsonAsync<TransactionsHistory>();
+            var transactionsHistory = await context.Request.ReadFromJsonAsync<TransactionsHistoryInfo>();
             if (transactionsHistory is null || transactionsHistory.User is null || transactionsHistory.User.Login is null)
             {
                 MainLogger.LogError("Error reading transactions history from get transactions request");

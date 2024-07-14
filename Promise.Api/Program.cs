@@ -149,7 +149,7 @@ app.MapPost("/gettransactions", async (HttpContext context) =>
     return await GetTransactions.Run(context, jwtSecret);
 #pragma warning restore CS0612 // Type or member is obsolete
 })
-.Accepts<TransactionsHistory>("application/json", "User data for Get Transactions")
+.Accepts<TransactionsHistoryInfo>("application/json", "Info info Get Transactions")
 .WithOpenApi();
 
 
