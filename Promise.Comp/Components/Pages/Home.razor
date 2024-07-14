@@ -40,15 +40,6 @@
 
 
 
-@* <div>
-<img src="_content/Promise.Comp/images/ark.jpg" width="100" alt="Ark Image" />
-</div>
-
-<br>
-
-TEST
-<br> *@
-
 
 @code {
     private bool isSignedIn = false;
@@ -101,35 +92,44 @@ TEST
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", appState.Token);
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        using var httpClient = new HttpClient();
-        var response = await httpClient.SendAsync(request);
-
-        var responseObject = await response.Content.ReadFromJsonAsync<ApiResponseUserInfo>();
-
-        if (response.IsSuccessStatusCode)
+        try
         {
-            if (responseObject is not null && responseObject.Success)
+            using var httpClient = new HttpClient();
+            var response = await httpClient.SendAsync(request);
+
+            var responseObject = await response.Content.ReadFromJsonAsync<ApiResponseUserInfo>();
+
+            if (response.IsSuccessStatusCode)
             {
-                return responseObject;
+                if (responseObject is not null && responseObject.Success)
+                {
+                    return responseObject;
+                }
+                else
+                {
+                    MainLogger.LogError("Error in GetUserInformation on Home page: " + responseObject?.Error);
+                    userInforError = "Sorry, we couldn't get your information. Please try again later.";
+                }
             }
             else
             {
-                MainLogger.LogError("Error in GetUserInformation on Home page: " + responseObject?.Error);
-                userInforError = "Sorry, we couldn't get your information. Please try again later.";
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    isAuthError = true;
+                }
+                else
+                {
+                    MainLogger.LogError("Error in GetUserInformation on Home page. Response code: " + response.StatusCode + ". Response error: " + responseObject?.Error);
+                    userInforError = "Sorry, we couldn't get your information. Please try again later.";
+                }
             }
         }
-        else
+        catch (Exception ex)
         {
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                isAuthError = true;
-            }
-            else
-            {
-                MainLogger.LogError("Error in GetUserInformation on Home page. Response code: " + response.StatusCode + ". Response error: " + responseObject?.Error);
-                userInforError = "Sorry, we couldn't get your information. Please try again later.";
-            }
+            MainLogger.LogError("Error in GetUserInformation on Home page: " + ex.Message);
+            userInforError = "Sorry, we couldn't get your information. Please try again later.";
         }
+
         return null;
     }
 }
