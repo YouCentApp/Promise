@@ -26,7 +26,7 @@
                     {
                         <tr>
                             <td>@transaction.Id</td>
-                            @if (@transaction.ReceiverLogin == username)
+                            @if (@transaction.ReceiverLogin.ToLower() == username.ToLower())
 
                             {
                                 <td>@transaction.SenderLogin</td>
@@ -81,6 +81,7 @@
     private DateTime from = DateTime.Now - TimeSpan.FromDays(5000);
     private DateTime to = DateTime.Now;
     private string api => settings.ApiUrl;
+    private bool isOldFirst = false;
     private string? errorMessage;
 
 
@@ -118,7 +119,8 @@
                 Limit = limit,
                 Offset = offset,
                 From = from,
-                To = to
+                To = to,
+                IsOldFirst = isOldFirst
             };
         try
         {
