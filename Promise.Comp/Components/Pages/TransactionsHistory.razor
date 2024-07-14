@@ -24,22 +24,25 @@
                 <tbody>
                     @foreach (var transaction in transactions)
                     {
-                        <tr>
-                            <td>@transaction.Id</td>
-                            @if (@transaction.ReceiverLogin.ToLower() == username.ToLower())
+                        @if (transaction is not null && transaction.ReceiverLogin is not null && username is not null)
+                        {
+                            <tr>
+                                <td>@transaction.Id</td>
+                                @if (@transaction.ReceiverLogin.ToLower() == username.ToLower())
 
-                            {
-                                <td>@transaction.SenderLogin</td>
-                                <td><span class="text-success">+@transaction.Cents</span></td>
-                            }
-                            else
-                            {
-                                <td>@transaction.ReceiverLogin</td>
-                                <td><span class="text-danger">-@transaction.Cents</span></td>
-                            }
-                            <td>@transaction.Date</td>
-                            <td>@transaction.Memo</td>
-                        </tr>
+                                {
+                                    <td>@transaction.SenderLogin</td>
+                                    <td><span class="text-success">+@transaction.Cents</span></td>
+                                }
+                                else
+                                {
+                                    <td>@transaction.ReceiverLogin</td>
+                                    <td><span class="text-danger">-@transaction.Cents</span></td>
+                                }
+                                <td>@transaction.Date</td>
+                                <td style="width: 20vw;">@transaction.Memo</td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>
@@ -48,8 +51,8 @@
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex justify-content-between">
-                <button class="btn btn-primary" @onclick="SortByDateAsc">Sort by Date Asc</button>
-                <button class="btn btn-primary" @onclick="SortByDateDesc">Sort by Date Desc</button>
+                <button class="btn btn-primary" @onclick="SortByDateAsc">Show Old First</button>
+                <button class="btn btn-primary" @onclick="SortByDateDesc">Show New First</button>
             </div>
         </div>
     </div>
@@ -60,7 +63,10 @@
                 {
                     <button class="btn btn-primary" @onclick="GoBack">Previous Page</button>
                 }
-                <button class="btn btn-primary" @onclick="GoForward">Next Page</button>
+                @if (transactions.Count == limit)
+                {
+                    <button class="btn btn-primary" @onclick="GoForward">Next Page</button>
+                }
             </div>
         </div>
     </div>
@@ -160,19 +166,22 @@
         return transactions;
     }
 
-    private void SortByDateAsc()
+    private async Task SortByDateAsc()
     {
-        // Implement the logic to sort the transactions by date in ascending order
+        isOldFirst = true;
+        transactions = await FetchTransactions();
     }
 
-    private void SortByDateDesc()
+    private async Task SortByDateDesc()
     {
-        // Implement the logic to sort the transactions by date in descending order
+        isOldFirst = false;
+        transactions = await FetchTransactions();
     }
 
-    private void GoBack()
+    private async Task GoBack()
     {
-        // Implement the logic to navigate to the previous page of transactions
+        offset -= limit;
+        transactions = await FetchTransactions();
     }
 
     private async Task GoForward()
