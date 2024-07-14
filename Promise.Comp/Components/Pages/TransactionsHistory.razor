@@ -169,12 +169,14 @@
     private async Task SortByDateAsc()
     {
         isOldFirst = true;
+        offset = 0;
         transactions = await FetchTransactions();
     }
 
     private async Task SortByDateDesc()
     {
         isOldFirst = false;
+        offset = 0;
         transactions = await FetchTransactions();
     }
 
