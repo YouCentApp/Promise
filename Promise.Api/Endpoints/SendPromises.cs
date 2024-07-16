@@ -63,6 +63,13 @@ public class SendPromises
                 return Results.Json(new { success = false, error = "Wrong password, sorry!" });
             }
 
+            if (sender.Id == receiver.Id)
+            {
+                MainLogger.LogError("Sender and receiver cannot be the same for send promises request for username: " + sender.Login);
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                return Results.Json(new { success = false, error = "Sender and receiver cannot be the same." });
+            }
+
             var balance = db.Balances.FirstOrDefault(b => b.UserId == sender.Id);
             var limit = db.PromiseLimits.FirstOrDefault(l => l.UserId == sender.Id);
             if (balance is null || limit is null || (balance.Cents + limit.Cents) < userTransaction.Cents)
