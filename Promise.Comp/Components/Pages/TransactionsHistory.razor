@@ -7,8 +7,34 @@
 @inject ISettings settings
 
 <h1>Transactions History</h1>
+<br>
+
 
 <div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="d-flex">
+                @if (offset > 0)
+                {
+                    <button class="btn btn-primary" @onclick="GoBack">Previous Page</button>
+                }
+                &nbsp;&nbsp;
+                @if (transactions.Count == limit)
+                {
+                    <button class="btn btn-primary" @onclick="GoForward">Next Page</button>
+                }
+            </div>
+        </div>
+        <br><br>
+        <div class="col-md-6">
+            <div class="d-flex">
+                <button class="btn btn-primary" @onclick="SortByDateAsc">Show Old First</button>
+                &nbsp;&nbsp;
+                <button class="btn btn-primary" @onclick="SortByDateDesc">Show New First</button>
+            </div>
+        </div>
+        <br><br>
+    </div>
     <div class="row">
         <div class="col-md-12">
             <table class="table table-striped">
@@ -49,20 +75,13 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-12">
-            <div class="d-flex justify-content-between">
-                <button class="btn btn-primary" @onclick="SortByDateAsc">Show Old First</button>
-                <button class="btn btn-primary" @onclick="SortByDateDesc">Show New First</button>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="d-flex justify-content-between">
+        <div class="col-md-6">
+            <div class="d-flex">
                 @if (offset > 0)
                 {
                     <button class="btn btn-primary" @onclick="GoBack">Previous Page</button>
                 }
+                &nbsp;&nbsp;
                 @if (transactions.Count == limit)
                 {
                     <button class="btn btn-primary" @onclick="GoForward">Next Page</button>
@@ -70,8 +89,9 @@
             </div>
         </div>
     </div>
-</div>
 
+</div>
+<br><br>
 @if (!string.IsNullOrEmpty(errorMessage))
 {
     <div class="alert alert-danger" role="alert">

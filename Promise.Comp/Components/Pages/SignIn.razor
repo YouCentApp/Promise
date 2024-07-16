@@ -8,35 +8,35 @@
 @inject AppState appState
 
 <h1>Sign In</h1>
-
+<br>
 @if (IsNewSignUp())
 {
     <div class="alert alert-success" role="alert">Thank you for signing up! You can now sign in.</div>
 }
-
+<br>
 <div class="container">
-    <div class="form-group">
+    <div class="form-group col-md-6">
         <label for="username">Username:</label>
         <input type="text" class="form-control" @bind="username" />
     </div>
-
-    <div class="form-group">
+    <br>
+    <div class="form-group col-md-6">
         <label for="password">Password:</label>
         <input type="password" class="form-control" @bind="password" />
     </div>
-
+<br>
     <button class="btn btn-primary" @onclick="TrySignInAsync">Submit</button>
-
+<br><br>
     @if (!string.IsNullOrEmpty(errorMessage))
     {
         <div class="alert alert-danger" role="alert">
             @errorMessage
         </div>
     }
-
+<br>
     <div class="text-center mt-4">
         <p>Don't have an account?
-            <a href="/signup" class="btn btn-link">Sign up</a>
+            <a style="font-weight: 800;" href="/signup" class="btn btn-link">Sign up</a>
         </p>
     </div>
 </div>

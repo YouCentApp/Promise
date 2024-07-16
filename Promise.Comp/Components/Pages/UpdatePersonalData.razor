@@ -6,52 +6,57 @@
 @inject ISettings settings
 
 <h1>Update Personal Data</h1>
+<br>
+<h2>Chose what you want to update by checking a box. If you want to
+    remove previously stored data, just leave the specific field
+    as it is (do not enter anything) after checking the coresponding box.</h2>
 
-<h2>Chose what you want to update by checking a box. If you want to remove previously stored data, just leave the field
-    as it is after checking the box.</h2>
-
-
+<br>
 <div>
-    <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" class="form-control" id="email" placeholder="Enter email" @bind="email"
+    <div class="form-group col-md-6">
+        <input type="checkbox" @bind="isEmailEnabled" /> <label for="email">Email</label>
+        <input type="email" class="form-control" placeholder="Enter email" @bind="email"
             disabled="@(!isEmailEnabled)" />
-        <input type="checkbox" @bind="isEmailEnabled" />
+        <br>
     </div>
-    <div class="form-group">
-        <label for="telephone">Telephone</label>
-        <input type="tel" class="form-control" id="telephone" placeholder="Enter telephone" @bind="telephone"
+    <div class="form-group col-md-6">
+        <input type="checkbox" @bind="isTelephoneEnabled" /> <label for="telephone">Telephone</label>
+        <input type="tel" class="form-control" placeholder="Enter telephone" @bind="telephone"
             disabled="@(!isTelephoneEnabled)" />
-        <input type="checkbox" @bind="isTelephoneEnabled" />
+        <br>
     </div>
-    <div class="form-group">
-        <label for="secretWord">Secret Word</label>
-        <input type="password" class="form-control" id="secretWord" placeholder="Enter secret word" @bind="secretWord"
+    <div class="form-group col-md-6">
+        <input type="checkbox" @bind="isSecretWordEnabled" /> <label for="secretWord">Secret Word</label>
+        <input type="password" class="form-control" placeholder="Enter secret word" @bind="secretWord"
             disabled="@(!isSecretWordEnabled)" />
-        <input type="checkbox" @bind="isSecretWordEnabled" />
+        <br>
     </div>
-    <div class="form-group">
-        <label for="confirmPassword">Confirm Password</label>
-        <input type="password" class="form-control" id="confirmPassword" placeholder="Enter password to confirm"
-            @bind="confirmPassword" />
+    <div class="form-group col-md-6">
+        <label for="confirmPassword">Password</label>
+        <input type="password" class="form-control" placeholder="Enter password to confirm" @bind="confirmPassword" />
     </div>
+    <br>
     <button type="submit" class="btn btn-primary" @onclick="SaveData">Save</button>
 </div>
 
+<br>
 @if (!string.IsNullOrEmpty(errorMessage))
 {
+    <br>
     <div class="alert alert-danger" role="alert">
     @errorMessage
 </div>
 }
 
+<br>
 @if (!string.IsNullOrEmpty(successMessage))
 {
+    <br>
     <div class="alert alert-success" role="alert">
     @successMessage
 </div>
 }
-
+<br><br>
 <h3>Please note that if you update (or remove) e-mail you will not be automatically unsubscribed from the newsletter.
     You cen do it from any e-mail you get.</h3>
 <p>Also you will not be subscribed to the newsletter with the new e-mail. You can do it manually on the website or by

@@ -7,30 +7,33 @@
 @inject ISettings settings
 
 <h1>Send Promises!</h1>
+<br>
+<p>Remember that 1 YCP is an equvalent of 0.01 USD (one cent). So, 1 USD dollar equvalent is 100 YCP.</p>
+<br>
 
 
-<div class="form-group">
-    <label for="cents">Cents:</label>
-    <input type="number" class="form-control" @bind="cents" />
+<div class="form-group col-md-6">
+    <label for="cents">Amount in YouCent Promises (YCP):</label>
+    <input type="text" class="form-control" @bind="cents" placeholder="0" />
 </div>
-
-<div class="form-group">
+<br>
+<div class="form-group col-md-6">
     <label for="beneficiary">Beneficiary:</label>
-    <input type="text" class="form-control" @bind="beneficiary" />
+    <input type="text" class="form-control" @bind="beneficiary" placeholder="Enter Username" />
 </div>
-
-<div class="form-group">
+<br>
+<div class="form-group col-md-6">
     <label for="beneficiary">Memo:</label>
-    <input type="text" class="form-control" @bind="memo" />
+    <input type="text" class="form-control" @bind="memo" placeholder="Enter optional message about transaction" />
 </div>
-
-<div class="form-group">
+<br>
+<div class="form-group col-md-6">
     <label for="password">Password:</label>
-    <input type="password" class="form-control" @bind="password" />
+    <input type="password" class="form-control" @bind="password" placeholder="Enter your password for confirmation" />
 </div>
-
+<br>
 <button type="button" class="btn btn-primary" @onclick="SendPrommisesAsync">Send Promises</button>
-
+<br><br>
 @if (!string.IsNullOrEmpty(errorMessage))
 {
     <div class="alert alert-danger" role="alert">

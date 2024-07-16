@@ -12,25 +12,26 @@
 <p>ID: @userId</p>
 
 <p>Are you sure you want to delete your account?</p>
-
-<div class="form-group">
-    <label for="username">Username:</label>
+<br>
+<div class="form-group col-md-6">
+    <label for="username">Enter your Username:</label>
     <input type="text" class="form-control" @bind="usernameConfirmed" />
 </div>
-
-<div class="form-group">
-    <label for="lastDigits">Last 3 digits of ID:</label>
+<br>
+<div class="form-group col-md-6">
+    <label for="lastDigits">Enter the last 3 digits of ID:</label>
     <input type="text" class="form-control" @bind="lastDigits" />
 </div>
-
-<div class="form-group">
-    <label for="username">Password:</label>
+<br>
+<div class="form-group col-md-6">
+    <label for="username">Confirm by entering your Password:</label>
     <input type="password" class="form-control" @bind="passwordConfirmed" />
 </div>
-
-
-<button type="button" class="btn btn-danger" @onclick="DeleteAccountAsync">Delete Account</button>
-
+<br>
+<div class="form-group col-md-12">
+    <button type="button" class="btn btn-danger" @onclick="DeleteAccountAsync">Delete Account</button>
+</div>
+<br><br>
 @if (!string.IsNullOrEmpty(errorMessage))
 {
     <div class="alert alert-danger" role="alert">
