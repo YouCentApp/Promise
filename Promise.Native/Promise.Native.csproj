@@ -43,13 +43,13 @@
 
     <ItemGroup>
         <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.png" />
+        <MauiIcon Include="Resources\Images\appicon.png" />
 
         <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.png" />
+        <MauiSplashScreen Include="Resources\Images\splash.png" />
 
         <!-- Images -->
-        <MauiImage Include="Resources\Images\*" />
+        <!-- <MauiImage Include="Resources\Images\*" /> -->
 
         <!-- Custom Fonts -->
         <MauiFont Include="Resources\Fonts\*" />
