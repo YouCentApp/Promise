@@ -79,7 +79,7 @@
                 var json = JsonSerializer.Serialize(userData);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await httpClient.PostAsync($"{api}/dataupdate", content);
+                var response = await httpClient.PutAsync($"{api}/dataupdate", content);
                 var responseObject = await response.Content.ReadFromJsonAsync<ApiResponse>();
 
                 if (response.IsSuccessStatusCode)
