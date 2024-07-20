@@ -23,7 +23,7 @@
         <Nullable>enable</Nullable>
 
         <!-- Display name -->
-        <ApplicationTitle>YouCent App</ApplicationTitle>
+        <ApplicationTitle>YouCent</ApplicationTitle>
 
         <!-- App Identifier -->
         <ApplicationId>app.YouCent</ApplicationId>
