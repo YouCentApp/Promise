@@ -1,0 +1,28 @@
+﻿@inherits LayoutComponentBase
+@using System.Text.Json
+@using System.Text
+@inject ISessionStorage sessionStorage
+@inject AppState appState
+@inject ISettings settings
+@inject NavigationManager navigationManager
+@inject IMyEnvironment myEnvironment
+@inject INavigationManager navigationManagerCrossplatform
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu IsSignedIn="@isSignedIn" />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <NavLink class="nav-link" href="/signin">Sign In</NavLink>
+        </div>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    private bool isSignedIn = false;
+}
