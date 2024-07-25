@@ -24,16 +24,17 @@
         <label for="password">Password:</label>
         <input type="password" class="form-control" @bind="password" />
     </div>
-<br>
+    <br>
     <button class="btn btn-primary" @onclick="TrySignInAsync">Submit</button>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <br><br>
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
 <br><br>
-    @if (!string.IsNullOrEmpty(errorMessage))
-    {
-        <div class="alert alert-danger" role="alert">
-            @errorMessage
-        </div>
-    }
-<br>
     <div class="text-center mt-4">
         <p>Don't have an account?
             <a style="font-weight: 800;" href="/signup" class="btn btn-link">Sign up</a>

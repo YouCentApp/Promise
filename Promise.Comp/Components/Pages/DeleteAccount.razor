@@ -31,9 +31,12 @@
 <div class="form-group col-md-12">
     <button type="button" class="btn btn-danger" @onclick="DeleteAccountAsync">Delete Account</button>
 </div>
-<br><br>
+
 @if (!string.IsNullOrEmpty(errorMessage))
 {
+    <br>
+
+    <br>
     <div class="alert alert-danger" role="alert">
     @errorMessage
 </div>

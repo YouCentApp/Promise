@@ -26,9 +26,10 @@
     </div>
     <br>
     <button class="btn btn-primary" @onclick="HandleSignUpAsync">Sign Up</button>
-    <br>
+    
     @if (!string.IsNullOrEmpty(errorMessage))
     {
+        <br><br>
         <div class="alert alert-danger" role="alert">
             @errorMessage
         </div>

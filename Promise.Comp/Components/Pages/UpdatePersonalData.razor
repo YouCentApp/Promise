@@ -39,9 +39,11 @@
     <button type="submit" class="btn btn-primary" @onclick="SaveData">Save</button>
 </div>
 
-<br>
+
 @if (!string.IsNullOrEmpty(errorMessage))
 {
+    <br>
+
     <br>
     <div class="alert alert-danger" role="alert">
     @errorMessage
