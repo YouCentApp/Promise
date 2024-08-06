@@ -40,13 +40,6 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (myEnvironment.IsNative())
-        {
-            if (await CheckIfNativeAppMustBeUpdated())
-            {
-                await navigationManagerCrossplatform.NavigateToAsync("UpdateApp");
-            }
-        }
         if (firstRender)
         {
             if (myEnvironment.IsNative())
@@ -60,6 +53,10 @@
                 else
                 {
                     appState.IsCutOff = false;
+                    if (await CheckIfNativeAppMustBeUpdated())
+                    {
+                        await navigationManagerCrossplatform.NavigateToAsync("UpdateApp");
+                    }
                 }
             }
         }
