@@ -125,15 +125,19 @@
         }
         else if (!string.IsNullOrEmpty(PhoneNumber) && !Regex.IsMatch(PhoneNumber, @"^\+(\d{1,5})(\d{1,12})$"))
         {
-            errorMessage = "Invalid phone number format (dont forget to add + sign and country code in the beginning)";
+            errorMessage = "Invalid phone number format! Please dont forget to add the plus sign (+) and country code in the beginning. For example: +15551112233";
         }
         else if (!string.IsNullOrEmpty(SecretWord) && SecretWord.Length < 4)
         {
-            errorMessage = "Secret word must be at least 8 characters long";
+            errorMessage = "Secret word must be at least 8 characters long.";
         }
         else if (!string.IsNullOrEmpty(SecretWord) && SecretWord.Length > 40)
         {
-            errorMessage = "Secret word must be at most 40 characters long";
+            errorMessage = "Secret word must be at most 40 characters long.";
+        }
+        else if (!string.IsNullOrEmpty(SecretWord) && !Regex.IsMatch(SecretWord, Policy.SecretWordRegex))
+        {
+            errorMessage = "Secret word  can consist only of uppercase letters, lowercase letters and digits.";
         }
     }
 
