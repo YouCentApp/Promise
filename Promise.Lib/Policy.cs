@@ -9,6 +9,10 @@ public class Policy
     public const int MaximumUsernameLength = 50;
 
     public const string PasswordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).*$";
+
+    public const string UsernameRegex = @"^[a-zA-Z0-9]+$";
+
+    public const string SecretWordRegex = @"^[a-zA-Z0-9]+$";
 }
 
 

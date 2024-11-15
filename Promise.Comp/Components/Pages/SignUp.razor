@@ -145,6 +145,14 @@
         {
             errorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.";
             return;
+        }
+
+        if (!Regex.IsMatch(username, Policy.UsernameRegex))
+        {
+            errorMessage = "Username can consist only of uppercase letters, lowercase letters and digits.";
+            return;
+        }
+
+
     }
-}
 }
