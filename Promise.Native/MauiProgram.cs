@@ -32,8 +32,6 @@ public static class MauiProgram
 		Environment.SetEnvironmentVariable(MyEnvironment.MauiEnviroment, MyEnvironment.Prod);
 #endif
 
-		Environment.SetEnvironmentVariable(MyEnvironment.MauiEnviroment, MyEnvironment.Prod);
-
 		return builder.Build();
 	}
 }
