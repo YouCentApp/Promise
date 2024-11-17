@@ -20,7 +20,7 @@ public class Settings(IMyEnvironment myEnvironment) : ISettings
             {
                 if (IsAndroid())
                 {
-                    return "http://10.0.2.2:5014";
+                    return "http://10.0.2.2:5011";
                 }
                 return Api.UrlDev;
             }
