@@ -121,59 +121,70 @@
                 return;
             }
             var user = new User
-                {
-                    Login = username,
-                    Password = password
-                };
+            {
+                Login = username,
+                Password = password
+            };
             var json = JsonSerializer.Serialize(user);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            using var httpClient = new HttpClient();
-            var response = await httpClient.PostAsync($"{api}/signin", content);
-            var responseObject = await response.Content.ReadFromJsonAsync<ApiResponseUser>();
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                if (responseObject is not null && responseObject.Success)
+                using var httpClient = new HttpClient();
+                var response = await httpClient.PostAsync($"{api}/signin", content);
+                var responseObject = await response.Content.ReadFromJsonAsync<ApiResponseUser>();
+
+                if (response.IsSuccessStatusCode)
                 {
-                    var token = response.Headers.GetValues("Authorization").FirstOrDefault()?.Replace("Bearer ", "");
-                    await sessionStorage.SetAsync("Token", token);
-                    await sessionStorage.SetAsync("Username", username);
-                    await sessionStorage.SetAsync("UserId", responseObject.Id);
-                    var usernameStored = await sessionStorage.GetAsync<string>("Username");
-                    var tokenStored = await sessionStorage.GetAsync<string>("Token");
-                    var userIdStored = await sessionStorage.GetAsync<string>("UserId");
-                    if (!string.IsNullOrEmpty(usernameStored) && 
-                        !string.IsNullOrEmpty(tokenStored) && 
-                        !string.IsNullOrEmpty(userIdStored))
+                    if (responseObject is not null && responseObject.Success)
                     {
-                        appState.IsSignedIn = true;
-                        appState.Username = usernameStored;
-                        appState.Token = tokenStored;
-                        appState.UserId = Convert.ToInt64(userIdStored);
-                        CompleteSignIn();
+                        var token = response.Headers.GetValues("Authorization").FirstOrDefault()?.Replace("Bearer ", "");
+                        await sessionStorage.SetAsync("Token", token);
+                        await sessionStorage.SetAsync("Username", username);
+                        await sessionStorage.SetAsync("UserId", responseObject.Id);
+                        var usernameStored = await sessionStorage.GetAsync<string>("Username");
+                        var tokenStored = await sessionStorage.GetAsync<string>("Token");
+                        var userIdStored = await sessionStorage.GetAsync<string>("UserId");
+                        if (!string.IsNullOrEmpty(usernameStored) && 
+                            !string.IsNullOrEmpty(tokenStored) && 
+                            !string.IsNullOrEmpty(userIdStored))
+                        {
+                            appState.IsSignedIn = true;
+                            appState.Username = usernameStored;
+                            appState.Token = tokenStored;
+                            appState.UserId = Convert.ToInt64(userIdStored);
+                            CompleteSignIn();
+                        }
+                        else
+                        {
+                            MainLogger.LogError("Failed to store user data in session storage. Username: " + username + ", Token: " + token + ", UserId: " + responseObject.Id);
+                            errorMessage = "Sorry, something went wrong. Please try again later.";
+                        }
                     }
                     else
                     {
-                        MainLogger.LogError(" Failed to store user data in session storage. Username: " + username + ", Token: " + token + ", UserId: " + responseObject.Id);
-                        errorMessage = "Sorry, something went wrong. Please try again later.";
-                    
+                        MainLogger.LogError(responseObject?.Error ?? " | Failed to sign in (Success property is false). Username: " + username);
+                        errorMessage = responseObject?.Error ?? "Sorry, something went wrong. Please try again later.";
                     }
                 }
                 else
                 {
-                    MainLogger.LogError(responseObject?.Error ?? " | Failed to sign in (Success property is false). Username: " + username);
+                    MainLogger.LogError(responseObject?.Error ?? " | Failed to sign in (Response is bad). Username: " + username);
                     errorMessage = responseObject?.Error ?? "Sorry, something went wrong. Please try again later.";
                 }
             }
-            else
+            catch (HttpRequestException ex)
             {
-                MainLogger.LogError(responseObject?.Error ?? " | Failed to sign in (Response is bad). Username: " + username);
-                errorMessage = responseObject?.Error ?? "Sorry, something went wrong. Please try again later.";
+                MainLogger.LogError("Network error while trying to sign in: " + ex.Message);
+                errorMessage = "Network error. Please check your internet connection and try again.";
+            }
+            catch (Exception ex)
+            {
+                MainLogger.LogError("Unexpected error while trying to sign in: " + ex.Message);
+                errorMessage = "An unexpected error occurred. Please try again later.";
             }
         }
     }
-
     private void ValidateForm()
     {
         errorMessage = string.Empty;

@@ -189,12 +189,18 @@
                 }
             }
         }
+        catch (HttpRequestException ex)
+        {
+            MainLogger.LogError("Network error in GetUserInformation on Home page: " + ex.Message);
+            userInforError = "Network error. Please check your internet connection and try again.";
+        }
         catch (Exception ex)
         {
-            MainLogger.LogError("Error in GetUserInformation on Home page: " + ex.Message);
-            userInforError = "Sorry, we couldn't get your information. Please try again later.";
+            MainLogger.LogError("Unexpected error in GetUserInformation on Home page: " + ex.Message);
+            userInforError = "An unexpected error occurred. Please try again later.";
         }
 
         return null;
     }
+    
 }

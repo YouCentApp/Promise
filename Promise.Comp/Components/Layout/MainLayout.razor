@@ -86,24 +86,43 @@
             Minor = AppVersion.Minor,
             Build = AppVersion.Build
         };
-        using var httpClient = new HttpClient();
-        var response = await httpClient.GetAsync($"{api}/minversup");
-        if (response.IsSuccessStatusCode)
+
+        try
         {
-            var minimumVersion = await response.Content.ReadFromJsonAsync<AppMinimumVersion>();
-            if (minimumVersion is not null)
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync($"{api}/minversup");
+
+            if (response.IsSuccessStatusCode)
             {
-                // Compare the current version with the minimum supported version
-                if (currentVersion.Major < minimumVersion.Major ||
-                (currentVersion.Major == minimumVersion.Major && currentVersion.Minor < minimumVersion.Minor) ||
-                (currentVersion.Major == minimumVersion.Major && currentVersion.Minor == minimumVersion.Minor && currentVersion.Build <
-                minimumVersion.Build))
+                var minimumVersion = await response.Content.ReadFromJsonAsync<AppMinimumVersion>();
+                if (minimumVersion is not null)
                 {
-                    return true; // App must be updated
+                    // Compare the current version with the minimum supported version
+                    if (currentVersion.Major < minimumVersion.Major ||
+                    (currentVersion.Major == minimumVersion.Major && currentVersion.Minor < minimumVersion.Minor) ||
+                    (currentVersion.Major == minimumVersion.Major && currentVersion.Minor == minimumVersion.Minor && currentVersion.Build <
+                    minimumVersion.Build))
+                    {
+                        return true; // App must be updated
+                    }
                 }
             }
+            else
+            {
+                MainLogger.LogError("Error checking app version. Response code: " + response.StatusCode);
+            }
         }
+        catch (HttpRequestException ex)
+        {
+            MainLogger.LogError("Network error while checking app version: " + ex.Message);
+        }
+        catch (Exception ex)
+        {
+            MainLogger.LogError("Unexpected error while checking app version: " + ex.Message);
+        }
+
         return false; // App does not need to be updated
     }
+
 
 }
