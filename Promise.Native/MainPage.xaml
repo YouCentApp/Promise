@@ -7,12 +7,17 @@
              BackgroundColor="{DynamicResource PageBackgroundColor}"
              Shell.NavBarIsVisible="False">
 
-    <BlazorWebView x:Name="blazorWebView"
-                   HostPage="wwwroot/index.html">
-        <BlazorWebView.RootComponents>
-            <RootComponent Selector="#app"
-                           ComponentType="{x:Type comp:Routes}"/>
-        </BlazorWebView.RootComponents>
-    </BlazorWebView>
-
+    <Grid BackgroundColor="{DynamicResource PrimaryTextColor}">
+        <ScrollView Grid.Row="1"
+                    Padding="0,0,0,0">
+            <BlazorWebView x:Name="blazorWebView"
+                           HostPage="wwwroot/index.html">
+                <BlazorWebView.RootComponents>
+                    <RootComponent Selector="#app"
+                            ComponentType="{x:Type comp:Routes}"/>
+                </BlazorWebView.RootComponents>
+            </BlazorWebView>
+        </ScrollView>
+    </Grid>
 </ContentPage>
+
