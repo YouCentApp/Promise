@@ -292,3 +292,4 @@ __pycache__/
 Promise.Api/appsettings.Development.json
 Promise.Web/appsettings.Development.json
 Promise.Native/key.keystore
+/Promise.Web/Properties/ServiceDependencies/promisesite - Web Deploy
