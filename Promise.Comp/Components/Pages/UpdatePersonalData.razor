@@ -7,28 +7,36 @@
 
 <h1>Update Personal Data</h1>
 <br>
-<h2>Chose what you want to update by checking a box. If you want to
+<h2>
+    Chose what you want to update by checking a box. If you want to
     remove previously stored data, just leave the specific field
-    as it is (do not enter anything) after checking the coresponding box.</h2>
+    as it is (do not enter anything) after checking the coresponding box.
+</h2>
 
 <br>
 <div>
     <div class="form-group col-md-6">
         <input type="checkbox" @bind="isEmailEnabled" /> <label for="email">Email</label>
         <input type="email" class="form-control" placeholder="Enter email" @bind="email"
-            disabled="@(!isEmailEnabled)" />
+               disabled="@(!isEmailEnabled)" />
         <br>
     </div>
     <div class="form-group col-md-6">
         <input type="checkbox" @bind="isTelephoneEnabled" /> <label for="telephone">Telephone</label>
+        <select class="form-control" @bind="selectedCountryCode" disabled="@(!isTelephoneEnabled)">
+            @foreach (var country in countryCodes)
+            {
+                <option value="@country.Code">@country.Name (@country.Code)</option>
+            }
+        </select>
         <input type="tel" class="form-control" placeholder="Enter telephone" @bind="telephone"
-            disabled="@(!isTelephoneEnabled)" />
+               disabled="@(!isTelephoneEnabled)" />
         <br>
     </div>
     <div class="form-group col-md-6">
         <input type="checkbox" @bind="isSecretWordEnabled" /> <label for="secretWord">Secret Word</label>
         <input type="password" class="form-control" placeholder="Enter secret word" @bind="secretWord"
-            disabled="@(!isSecretWordEnabled)" />
+               disabled="@(!isSecretWordEnabled)" />
         <br>
     </div>
     <div class="form-group col-md-6">
@@ -46,8 +54,8 @@
 
     <br>
     <div class="alert alert-danger" role="alert">
-    @errorMessage
-</div>
+        @errorMessage
+    </div>
 }
 
 <br>
@@ -55,14 +63,19 @@
 {
     <br>
     <div class="alert alert-success" role="alert">
-    @successMessage
-</div>
+        @successMessage
+    </div>
 }
-<br><br>
-<h3>Please note that if you update (or remove) e-mail you will not be automatically unsubscribed from the newsletter.
-    You can do it from any e-mail you get.</h3>
-<p>Also you will not be subscribed to the newsletter with the new e-mail. You can do it manually on the website or by
-    contacting us</p>
+<br>
+<br>
+<h3>
+    Please note that if you update (or remove) e-mail you will not be automatically unsubscribed from the newsletter.
+    You can do it from any e-mail you get.
+</h3>
+<p>
+    Also you will not be subscribed to the newsletter with the new e-mail. You can do it manually on the website or by
+    contacting us
+</p>
 
 @code {
     private string? email;
@@ -74,7 +87,17 @@
     private bool isSecretWordEnabled;
     private string? errorMessage;
     private string? successMessage;
+    private string selectedCountryCode;
     private string api => settings.ApiUrl;
+
+    private List<CountryCode> countryCodes = new List<CountryCode>
+    {
+        new CountryCode { Name = "United States", Code = "+1" },
+        new CountryCode { Name = "United Kingdom", Code = "+44" },
+        new CountryCode { Name = "Canada", Code = "+1" },
+        new CountryCode { Name = "Australia", Code = "+61" },
+        // Add more country codes as needed
+    };
 
     protected override void OnInitialized()
     {
@@ -108,7 +131,7 @@
         var personalData = new PersonalData
             {
                 Email = isEmailEnabled ? email : null,
-                Tel = isTelephoneEnabled ? telephone : null,
+                Tel = isTelephoneEnabled ? $"{selectedCountryCode} {telephone}" : null,
                 Secret = isSecretWordEnabled ? secretWord : null
             };
         var userData = new UserData
@@ -130,15 +153,19 @@
             else
             {
                 errorMessage = "Sorry, something went wrong. Please try again later. Possible reason: "
-                + responseObject?.Error ??
-                "Unknown error...";
+                + responseObject?.Error ?? "Unknown error...";
             }
         }
         else
         {
             errorMessage = "Sorry, something went wrong. Please try again later. Possible reason: "
-            + responseObject?.Error ??
-            "Unknown error...";
+            + responseObject?.Error ?? "Unknown error...";
         }
+    }
+
+    private class CountryCode
+    {
+        public string Name { get; set; }
+        public string Code { get; set; }
     }
 }
