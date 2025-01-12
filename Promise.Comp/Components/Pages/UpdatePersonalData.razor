@@ -23,14 +23,16 @@
     </div>
     <div class="form-group col-md-6">
         <input type="checkbox" @bind="isTelephoneEnabled" /> <label for="telephone">Telephone</label>
-        <select class="form-control" @bind="selectedCountryCode" disabled="@(!isTelephoneEnabled)">
-            @foreach (var country in countryCodes)
-            {
-                <option value="@country.Code">@country.Name (@country.Code)</option>
-            }
-        </select>
-        <input type="tel" class="form-control" placeholder="Enter telephone" @bind="telephone"
-               disabled="@(!isTelephoneEnabled)" />
+        <div class="d-flex">
+            <select class="form-control me-2" @bind="selectedCountryCode" disabled="@(!isTelephoneEnabled)">
+                @foreach (var country in countryCodes)
+                {
+                    <option value="@country.Code">@country.Name (@country.Code)</option>
+                }
+            </select>
+            <input type="tel" class="form-control" placeholder="Enter telephone" @bind="telephone"
+                   disabled="@(!isTelephoneEnabled)" />
+        </div>
         <br>
     </div>
     <div class="form-group col-md-6">
@@ -69,8 +71,8 @@
 <br>
 <br>
 <h3>
-    Please note that if you update (or remove) e-mail you will not be automatically unsubscribed from the newsletter.
-    You can do it from any e-mail you get.
+    Please note that if you update (or remove) e-mail address you will not be automatically unsubscribed from the newsletter.
+    You can always do it from any e-mail message you get from us or by contacting us with opt-out request.
 </h3>
 <p>
     Also you will not be subscribed to the newsletter with the new e-mail. You can do it manually on the website or by
@@ -131,7 +133,7 @@
         var personalData = new PersonalData
             {
                 Email = isEmailEnabled ? email : null,
-                Tel = isTelephoneEnabled ? $"{selectedCountryCode} {telephone}" : null,
+                Tel = isTelephoneEnabled ? $"{selectedCountryCode}{telephone}" : null,
                 Secret = isSecretWordEnabled ? secretWord : null
             };
         var userData = new UserData
