@@ -21,8 +21,17 @@
     </div>
     <br>
     <div class="form-group col-md-6">
-        <label for="phoneNumber">Phone Number (with a country code please!)</label>
-        <input type="tel" class="form-control" @bind="@PhoneNumber" placeholder="+15554443322">
+        <div class="d-flex">
+            <label for="phoneNumber">Phone Number</label>
+            <select class="form-control me-2" @bind="selectedCountryCode">
+                <option value="">Chose Country Code</option>
+                @foreach (var country in CountryCode.Values)
+                {
+                    <option value="+@country.Code">@country.Name (+@country.Code)</option>
+                }
+            </select>
+            <input type="tel" class="form-control" placeholder="Enter telephone" @bind="telephone" />
+        </div>
     </div>
     <br>
     <div class="form-group col-md-6">
@@ -41,9 +50,10 @@
 
 @code {
     private string? Email { get; set; }
-    private string? PhoneNumber { get; set; }
+    private string? telephone { get; set; }
     private string? SecretWord { get; set; }
     private string? errorMessage;
+    private string selectedCountryCode = "";
     private string api => settings.ApiUrl;
 
     protected override void OnAfterRender(bool firstRender)
@@ -71,7 +81,7 @@
                 var data = new PersonalData
                     {
                         Email = Email,
-                        Tel = PhoneNumber,
+                        Tel = $"{selectedCountryCode}{telephone}",
                         Secret = SecretWord,
                     };
                 var userData = new UserData
@@ -123,9 +133,9 @@
         {
             errorMessage = "Invalid email format";
         }
-        else if (!string.IsNullOrEmpty(PhoneNumber) && !Regex.IsMatch(PhoneNumber, @"^\+(\d{1,5})(\d{1,12})$"))
+        else if (!string.IsNullOrEmpty(telephone) && !Regex.IsMatch(selectedCountryCode+telephone, @"^\+(\d{1,5})(\d{4,12})$"))
         {
-            errorMessage = "Invalid phone number format! Please dont forget to add the plus sign (+) and country code in the beginning. For example: +15551112233";
+            errorMessage = "Invalid phone number format! Don't forget to pick the country code please.";
         }
         else if (!string.IsNullOrEmpty(SecretWord) && SecretWord.Length < 4)
         {
