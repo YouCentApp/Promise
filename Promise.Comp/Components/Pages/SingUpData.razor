@@ -21,8 +21,8 @@
     </div>
     <br>
     <div class="form-group col-md-6">
+        <label for="phoneNumber">Phone Number</label>
         <div class="d-flex">
-            <label for="phoneNumber">Phone Number</label>
             <select class="form-control me-2" @bind="selectedCountryCode">
                 <option value="">Chose Country Code</option>
                 @foreach (var country in CountryCode.Values)
