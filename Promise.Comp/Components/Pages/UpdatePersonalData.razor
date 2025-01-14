@@ -134,7 +134,9 @@
             var personalData = new PersonalData
                 {
                     Email = isEmailEnabled ? email : null,
-                    Tel = isTelephoneEnabled ? $"{selectedCountryCode}{telephone}" : null,
+                    Tel = isTelephoneEnabled ? 
+                        string.IsNullOrWhiteSpace(telephone) ? "" : $"{selectedCountryCode}{telephone}" 
+                        : null,
                     Secret = isSecretWordEnabled ? secretWord : null
                 };
             var userData = new UserData
@@ -171,24 +173,23 @@
     {
         errorMessage = null;
 
-        if (isEmailEnabled && !string.IsNullOrEmpty(email) && !Regex.IsMatch(email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
+        if (isEmailEnabled && !string.IsNullOrWhiteSpace(email) && !Regex.IsMatch(email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
         {
             errorMessage = "Invalid email format";
         }
-        else if (isTelephoneEnabled && !string.IsNullOrEmpty(selectedCountryCode) && !string.IsNullOrEmpty(telephone) 
-        && !Regex.IsMatch(selectedCountryCode + telephone, @"^\+(\d{1,5})(\d{4,12})$"))
+        else if (isTelephoneEnabled && !string.IsNullOrWhiteSpace(telephone) && !Regex.IsMatch(selectedCountryCode + telephone, @"^\+(\d{1,5})(\d{4,12})$"))
         {
             errorMessage = "Invalid phone number format! Don't forget to pick the country code please.";
         }
-        else if (isSecretWordEnabled && !string.IsNullOrEmpty(secretWord) && secretWord.Length < 4)
+        else if (isSecretWordEnabled && !string.IsNullOrWhiteSpace(secretWord) && secretWord.Length < 4)
         {
             errorMessage = "Secret word must be at least 8 characters long.";
         }
-        else if (isSecretWordEnabled && !string.IsNullOrEmpty(secretWord) && secretWord.Length > 40)
+        else if (isSecretWordEnabled && !string.IsNullOrWhiteSpace(secretWord) && secretWord.Length > 40)
         {
             errorMessage = "Secret word must be at most 40 characters long.";
         }
-        else if (isSecretWordEnabled && !string.IsNullOrEmpty(secretWord) && !Regex.IsMatch(secretWord, Policy.SecretWordRegex))
+        else if (isSecretWordEnabled && !string.IsNullOrWhiteSpace(secretWord) && !Regex.IsMatch(secretWord, Policy.SecretWordRegex))
         {
             errorMessage = "Secret word  can consist only of uppercase letters, lowercase letters and digits.";
         }

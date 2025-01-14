@@ -81,7 +81,7 @@
                 var data = new PersonalData
                     {
                         Email = Email,
-                        Tel = $"{selectedCountryCode}{telephone}",
+                        Tel = string.IsNullOrWhiteSpace(telephone) ? "" : $"{selectedCountryCode}{telephone}",
                         Secret = SecretWord,
                     };
                 var userData = new UserData
@@ -129,23 +129,23 @@
     {
         errorMessage = null;
 
-        if (!string.IsNullOrEmpty(Email) && !Regex.IsMatch(Email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
+        if (!string.IsNullOrWhiteSpace(Email) && !Regex.IsMatch(Email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
         {
             errorMessage = "Invalid email format";
         }
-        else if (!string.IsNullOrEmpty(telephone) && !Regex.IsMatch(selectedCountryCode+telephone, @"^\+(\d{1,5})(\d{4,12})$"))
+        else if (string.IsNullOrWhiteSpace(telephone) && !Regex.IsMatch(selectedCountryCode + telephone, @"^\+(\d{1,5})(\d{4,12})$"))
         {
-            errorMessage = "Invalid phone number format! Don't forget to pick the country code please.";
+            errorMessage = "Invalid phone number format! Don't forget to pick the country code.";
         }
-        else if (!string.IsNullOrEmpty(SecretWord) && SecretWord.Length < 4)
+        else if (!string.IsNullOrWhiteSpace(SecretWord) && SecretWord.Length < 4)
         {
             errorMessage = "Secret word must be at least 8 characters long.";
         }
-        else if (!string.IsNullOrEmpty(SecretWord) && SecretWord.Length > 40)
+        else if (!string.IsNullOrWhiteSpace(SecretWord) && SecretWord.Length > 40)
         {
             errorMessage = "Secret word must be at most 40 characters long.";
         }
-        else if (!string.IsNullOrEmpty(SecretWord) && !Regex.IsMatch(SecretWord, Policy.SecretWordRegex))
+        else if (!string.IsNullOrWhiteSpace(SecretWord) && !Regex.IsMatch(SecretWord, Policy.SecretWordRegex))
         {
             errorMessage = "Secret word  can consist only of uppercase letters, lowercase letters and digits.";
         }
