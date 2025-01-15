@@ -83,9 +83,9 @@ public static class DataUpdate
             var records = await db.SaveChangesAsync();
             if (records < 1)
             {
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                MainLogger.LogError("Error saving personal data to DB");
-                return Results.Json(new { success = false, error = "Server error..." });
+                context.Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                MainLogger.LogError("Error saving personal data to DB. Possibly trying to save same personal data which is already there.");
+                return Results.Json(new { success = false, error = "Nothing saved to the DB most likely because you try to save same data again." });
             }
             context.Response.StatusCode = StatusCodes.Status202Accepted;
             return Results.Json(new ApiResponse
