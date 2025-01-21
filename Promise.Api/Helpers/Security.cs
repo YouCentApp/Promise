@@ -139,4 +139,25 @@ public static class Security
         return Convert.ToBase64String(salt); ;
     }
 
+
+    internal static string GetMaskedEmail(string email)
+    {
+        var emailParts = email.Split('@');
+        if (emailParts.Length != 2) return "*not*valid*email";
+        var localPart = emailParts[0];
+        var domainPart = emailParts[1];
+        var maskedLocalPart = localPart[..2] + "****" + localPart[^2..];
+        var domainParts = domainPart.Split('.');
+        if (domainParts.Length < 2) return "*not*valid*email";
+        var maskedDomainPart = domainParts[0][..2] + "****" + domainParts[0][^2..] + "." + string.Join('.', domainParts.Skip(1));
+        var maskedEmail = maskedLocalPart + "@" + maskedDomainPart;
+        return maskedEmail;
+    }
+
+    internal static string GetMaskedTel(string tel)
+    {
+        if (string.IsNullOrEmpty(tel) || tel.Length < 4) return "*not*valid*tel";
+        var maskedTel = new string('*', tel.Length - 4) + tel[^4..];
+        return maskedTel;
+    }
 }
