@@ -28,15 +28,6 @@ CREATE TABLE Languages
 );
 
 
--- [NewsOptIn] definition
-
-
-CREATE TABLE [dbo].[NewsOptIn](
-	[Email] [nvarchar](150) NULL,
-	[Tel] [nvarchar](20) NULL
-);
-
-
 -- Users definition
 
 
