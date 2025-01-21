@@ -106,7 +106,7 @@ public static class Security
 
     private static string GetJwtFromBearerJwt(string bearerJwt)
     {
-        return bearerJwt.Substring(bearerTokenPrefix.Length);
+        return bearerJwt[bearerTokenPrefix.Length..];
     }
 
     private static string GetCryptoHash(HashAlgorithm crypto, string input)
