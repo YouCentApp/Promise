@@ -133,7 +133,7 @@
         {
             errorMessage = "Invalid email format";
         }
-        else if (string.IsNullOrWhiteSpace(telephone) && !Regex.IsMatch(selectedCountryCode + telephone, @"^\+(\d{1,5})(\d{4,12})$"))
+        else if (!string.IsNullOrWhiteSpace(telephone) && !Regex.IsMatch(selectedCountryCode + telephone, @"^\+(\d{1,5})(\d{4,12})$"))
         {
             errorMessage = "Invalid phone number format! Don't forget to pick the country code.";
         }
