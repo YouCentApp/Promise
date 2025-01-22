@@ -72,7 +72,7 @@ public static class DataUpdate
             }
             else
             {
-                if(dbPersonalData.Salt is null)
+                if(string.IsNullOrWhiteSpace(dbPersonalData.Salt))
                 {
                     dbPersonalData.Salt = Security.GetSalt();
                 }
