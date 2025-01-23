@@ -51,8 +51,10 @@ public static class DataUpdate
             }
 
             var dbPersonalData = await db.PersonalData.FirstOrDefaultAsync(pd => pd.UserId == dbUser.Id);
+            string salt;
             if (dbPersonalData is null)
             {
+                salt = Security.GetSalt();
                 dbPersonalData = new PersonalData
                 {
                     UserId = dbUser.Id,
@@ -62,23 +64,60 @@ public static class DataUpdate
                     EmailHash = "",
                     TelHash = "",
                     SecretHash = "",
-                    Salt = "",
+                    Salt = salt,
                     EmailMasked = "",
                     TelMasked = ""
                 };
                 db.PersonalData.Add(dbPersonalData);
             }
+            else
+            {
+                if(string.IsNullOrWhiteSpace(dbPersonalData.Salt))
+                {
+                    dbPersonalData.Salt = Security.GetSalt();
+                }
+                salt = dbPersonalData.Salt;
+            }
+
             if (personalData.Email is not null)
             {
                 dbPersonalData.Email = personalData.Email;
+                if(!string.IsNullOrWhiteSpace(personalData.Email))
+                {
+                    dbPersonalData.EmailHash = Security.GetHash(personalData.Email + salt);
+                    dbPersonalData.EmailMasked = Security.GetMaskedEmail(personalData.Email);
+                }
+                else
+                {
+                    dbPersonalData.EmailHash = "";
+                    dbPersonalData.EmailMasked = "";
+                }
             }
             if (personalData.Tel is not null)
             {
                 dbPersonalData.Tel = personalData.Tel;
+                if (!string.IsNullOrWhiteSpace(personalData.Tel))
+                {
+                    dbPersonalData.TelHash = Security.GetHash(personalData.Tel + salt);
+                    dbPersonalData.TelMasked = Security.GetMaskedTel(personalData.Tel);
+                }
+                else
+                {
+                    dbPersonalData.TelHash = "";
+                    dbPersonalData.TelMasked = "";
+                }
             }
             if (personalData.Secret is not null)
             {
                 dbPersonalData.Secret = personalData.Secret;
+                if (!string.IsNullOrWhiteSpace(personalData.Secret))
+                {
+                    dbPersonalData.SecretHash = Security.GetHash(personalData.Secret + salt);
+                }
+                else
+                {
+                    dbPersonalData.SecretHash = "";
+                }
             }
             var records = await db.SaveChangesAsync();
             if (records < 1)

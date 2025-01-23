@@ -28,29 +28,6 @@ CREATE TABLE Languages
 );
 
 
--- TempPersonalData definition
-
-
-CREATE TABLE TempPersonalData
-(
-    UserId bigint NOT NULL,
-    FirstName nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    LastName nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    Email nvarchar(150) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    Tel nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    WhatsApp nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    Viber nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    Telegram nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    IsEmailNews bit NOT NULL,
-    IsMesNews bit NOT NULL,
-    SecretWord nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    IsAgreePSPD bit NOT NULL,
-    Promocode nvarchar(70) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    SubmitDate datetime DEFAULT getdate() NOT NULL,
-    CONSTRAINT PK_TempPersonalData_UserId PRIMARY KEY (UserId)
-);
-
-
 -- Users definition
 
 
@@ -160,13 +137,9 @@ CREATE TABLE UserSettings
 );
 
 
-
 -- PersonalData definition
 
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE TABLE [dbo].[PersonalData]
 (
     [UserId] [bigint] NOT NULL,
