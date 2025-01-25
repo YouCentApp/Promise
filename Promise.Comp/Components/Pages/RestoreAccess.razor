@@ -1,0 +1,63 @@
+﻿@page "/restoreaccess"
+@inject AppState appState
+@inject NavigationManager navigationManager
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h1>Restore Access</h1>
+
+            <p>Here you can try to restore the accesses if you forgot your password.</p>
+            <br />
+            <br />
+            <p>What would you like to use to get the new temporrarly password?</p>
+            <p>
+                Please note that you can only use the information previously submited. If you submited multiple types, you can chose then.
+                If you dubmite only one type, you must use only that one. If you did not submit anything please contact us.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="text-center">
+    <div class="btn-group-vertical" role="group" aria-label="Profile Actions">
+        <br />
+        <br />
+        <button type="button" class="btn btn-primary" @onclick="restoreUsingSecretWord">Secret Word (takes few seconds)</button>
+        <br />
+        <br />
+        <button type="button" class="btn btn-secondary" @onclick="restoreUsingEmail">E-mail (takes few minutes)</button>
+        <br />
+        <br />
+        <button type="button" class="btn btn-danger" @onclick="restoreUsingTel">Tel (can take up to 1-2 days)</button>
+    </div>
+</div>
+
+
+
+@code {
+
+
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+    private void restoreUsingSecretWord()
+    {
+        navigationManager.NavigateTo("restoreusingsecretword");
+    }
+
+    private void restoreUsingEmail()
+    {
+        navigationManager.NavigateTo("restoreusingemail");
+    }
+
+    private void restoreUsingTel()
+    {
+        navigationManager.NavigateTo("restoreusingtel");
+    }
+
+}
