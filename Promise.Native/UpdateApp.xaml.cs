@@ -31,7 +31,7 @@ public partial class UpdateApp : ContentPage
 
 	private async void UpdateForWeb(object sender, EventArgs e)
 	{
-		await Launcher.OpenAsync(new Uri("https://youcentapp.azurewebsites.net/"));
+		await Launcher.OpenAsync(new Uri("https://promisesite.azurewebsites.net/"));
 	}
 
 	// VisitWebsite
