@@ -140,27 +140,35 @@ CREATE TABLE UserSettings
 -- PersonalData definition
 
 
-CREATE TABLE [dbo].[PersonalData]
-(
-    [UserId] [bigint] NOT NULL,
-    [Email] [nvarchar](150) NOT NULL,
-    [Tel] [nvarchar](20) NOT NULL,
-    [Secret] [nvarchar](50) NOT NULL,
-    [EmailHash] [nvarchar](64) NOT NULL,
-    [TelHash] [nvarchar](64) NOT NULL,
-    [SecretHash] [nvarchar](64) NOT NULL,
-    [Salt] [nvarchar](32) NOT NULL,
-    [EmailMasked] [nvarchar](150) NOT NULL,
-    [TelMasked] [nvarchar](20) NOT NULL
-) ON [PRIMARY]
-GO
-ALTER TABLE [dbo].[PersonalData] ADD  CONSTRAINT [PK_PersonalData_UserId] PRIMARY KEY CLUSTERED 
-(
-	[UserId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-ALTER TABLE [dbo].[PersonalData]  WITH CHECK ADD  CONSTRAINT [FK_PersonalData_UserId_Users_Id] FOREIGN KEY([UserId])
-REFERENCES [dbo].[Users] ([Id])
-GO
-ALTER TABLE [dbo].[PersonalData] CHECK CONSTRAINT [FK_PersonalData_UserId_Users_Id]
-GO
+CREATE TABLE PersonalData (
+	UserId bigint NOT NULL,
+	Email nvarchar(150) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	Tel nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	Secret nvarchar(50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	EmailHash nvarchar(64) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	TelHash nvarchar(64) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	SecretHash nvarchar(64) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	Salt nvarchar(32) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	EmailMasked nvarchar(150) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	TelMasked nvarchar(20) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	CONSTRAINT PK_PersonalData_UserId PRIMARY KEY (UserId)
+);
+
+ALTER TABLE PersonalData ADD CONSTRAINT FK_PersonalData_UserId_Users_Id FOREIGN KEY (UserId) REFERENCES YCDB.dbo.Users(Id);
+
+
+-- AccessRestore definition
+
+
+CREATE TABLE AccessRestore (
+	UserId bigint NOT NULL,
+	UseSecretTryNumber int NOT NULL,
+	UseSecretTryDate datetime NULL,
+	UseEmailTryNumber int NOT NULL,
+	UseEmailTryDate datetime NULL,
+	UseTelTryNumber int NOT NULL,
+	UseTelTryDate datetime NULL,
+	CONSTRAINT PK_AccessRestore_UserId PRIMARY KEY (UserId)
+);
+
+ALTER TABLE AccessRestore ADD CONSTRAINT FK_AccessRestore_UserId_User_Id FOREIGN KEY (UserId) REFERENCES YCDB.dbo.Users(Id);
