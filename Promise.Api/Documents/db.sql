@@ -171,4 +171,4 @@ CREATE TABLE AccessRestore (
 	CONSTRAINT PK_AccessRestore_UserId PRIMARY KEY (UserId)
 );
 
-ALTER TABLE AccessRestore ADD CONSTRAINT FK_AccessRestore_UserId_User_Id FOREIGN KEY (UserId) REFERENCES YCDB.dbo.Users(Id);
+ALTER TABLE AccessRestore ADD CONSTRAINT FK_AccessRestore_UserId_User_Id FOREIGN KEY (UserId) REFERENCES Users(Id);
