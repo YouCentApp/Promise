@@ -2,7 +2,6 @@ using Promise.Api;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -58,14 +57,12 @@ else
 
 string? jwtSecret = configuration["Jwt:Secret"];
 
-
 // MinVerSup endpoint. It checks if the version of the APP is supported.
 app.MapGet("/minversup", () =>
 {
     return new { major = 2, minor = 0, build = 2 };
 })
 .WithOpenApi();
-
 
 // SignIn endpoint
 app.MapPost("/signin", async (HttpContext context) =>
@@ -78,7 +75,6 @@ app.MapPost("/signin", async (HttpContext context) =>
 .Accepts<User>("application/json", "User data for Sign In")
 .WithOpenApi();
 
-
 // SignUp endpoint
 app.MapPost("/signup", async (HttpContext context) =>
 {
@@ -86,7 +82,6 @@ app.MapPost("/signup", async (HttpContext context) =>
 })
 .Accepts<User>("application/json", "User data for Sign Up")
 .WithOpenApi();
-
 
 // UserInfo endpoint
 app.MapPost("/userinfo", async (HttpContext context) =>
@@ -99,7 +94,6 @@ app.MapPost("/userinfo", async (HttpContext context) =>
 .Accepts<User>("application/json", "User data for User Info")
 .WithOpenApi();
 
-
 // DataUpdate endpoint
 app.MapPut("/dataupdate", async (HttpContext context) =>
 {
@@ -107,7 +101,6 @@ app.MapPut("/dataupdate", async (HttpContext context) =>
 })
 .Accepts<UserData>("application/json", "User data for Data Update")
 .WithOpenApi();
-
 
 // DeleteUser endpoint
 app.MapDelete("/deleteuser", async (HttpContext context) =>
@@ -119,7 +112,6 @@ app.MapDelete("/deleteuser", async (HttpContext context) =>
 .Accepts<User>("application/json", "User data for Delete User")
 .WithOpenApi();
 
-
 // UpdatePassword endpoint
 app.MapPut("/updatepassword", async (HttpContext context) =>
 {
@@ -129,7 +121,6 @@ app.MapPut("/updatepassword", async (HttpContext context) =>
 })
 .Accepts<UserUpdate>("application/json", "User data for Update Password")
 .WithOpenApi();
-
 
 // SendPromises endpoint
 app.MapPost("/sendpromises", async (HttpContext context) =>
@@ -141,7 +132,6 @@ app.MapPost("/sendpromises", async (HttpContext context) =>
 .Accepts<UserTransaction>("application/json", "User data for Send Promises")
 .WithOpenApi();
 
-
 // GetTransactions endpoint
 app.MapPost("/gettransactions", async (HttpContext context) =>
 {
@@ -152,9 +142,13 @@ app.MapPost("/gettransactions", async (HttpContext context) =>
 .Accepts<TransactionsHistoryInfo>("application/json", "Info info Get Transactions")
 .WithOpenApi();
 
-
+// RestoreAccessUseSecret endpoint
+app.MapPut("/restoreaccessusesecret", async (HttpContext context) =>
+{
+    return await RestoreAccessUseSecret.Run(context);
+})
+.Accepts<RestoreAccessInfo>("application/json", "Data for restoring access using secret word")
+.WithOpenApi();
 
 // RUN!
-
 app.Run();
-
