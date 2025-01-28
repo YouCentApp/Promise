@@ -1,5 +1,4 @@
-﻿
-public class Currency
+﻿public class Currency
 {
     public byte Id { get; set; }
     public string? Code { get; set; }
@@ -15,7 +14,6 @@ public class Language
     public string? NameNative { get; set; }
 }
 
-
 public class User
 {
     public long Id { get; set; }
@@ -30,7 +28,6 @@ public class Balance
     public long UserId { get; set; }
     public long Cents { get; set; }
 }
-
 
 public class PromiseLimit
 {
@@ -79,5 +76,14 @@ public class PersonalData
     public string? TelMasked { get; set; }
 }
 
-
+public class AccessRestore
+{
+    public long UserId { get; set; }
+    public int UseSecretTryNumber { get; set; }
+    public DateTime? UseSecretTryDate { get; set; }
+    public int UseEmailTryNumber { get; set; }
+    public DateTime? UseEmailTryDate { get; set; }
+    public int UseTelTryNumber { get; set; }
+    public DateTime? UseTelTryDate { get; set; }
+}
 
