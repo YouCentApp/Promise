@@ -54,7 +54,7 @@ public static class RestoreAccessUseSecret
         {
             MainLogger.LogError($"An error occurred while restoring access. Exception: {ex.Message}");
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            return Results.Json(new { success = false, error = "An error occurred while restoring access. " + errorReason });
+            return Results.Json(new { success = false, error = "Something went wrong... " + errorReason });
         }
     }
 
