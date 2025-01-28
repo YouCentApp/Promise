@@ -27,3 +27,9 @@ public class TransactionsHistoryInfo
     public int Limit { get; set; }
     public int Offset { get; set; }
 }
+
+public class RestoreAccessInfo
+{
+    public string? Username { get; set; }
+    public string? UseData { get; set; }
+}
