@@ -160,4 +160,12 @@ public static class Security
         var maskedTel = new string('*', tel.Length - 4) + tel[^4..];
         return maskedTel;
     }
+
+    internal static string GenerateTemporaryPassword()
+    {
+        const string chars = "0123456789ABCDEFGHIJKLMNOPQRS0123456789TUVWXYZ0123456789abcdefghijklmnopqrs0123456789tuvwxyz0123456789";
+        var random = new Random();
+        return new string(Enumerable.Repeat(chars, 8).Select(s => s[random.Next(s.Length)]).ToArray());
+    }
+
 }

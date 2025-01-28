@@ -41,7 +41,7 @@ public static class RestoreAccessUseSecret
                 return Results.Json(new { success = false, error = "Incorrect secret word." });
             }
 
-            var newPassword = GenerateTemporaryPassword();
+            var newPassword = Security.GenerateTemporaryPassword();
             var newPasswordHash = Security.GetPasswordHash(newPassword, user.Salt!);
             user.Password = newPasswordHash;
 
@@ -96,12 +96,7 @@ public static class RestoreAccessUseSecret
     }
 
 
-    private static string GenerateTemporaryPassword()
-    {
-        const string chars = "0123456789ABCDEFGHIJKLMNOPQRS0123456789TUVWXYZ0123456789abcdefghijklmnopqrs0123456789tuvwxyz0123456789";
-        var random = new Random();
-        return new string(Enumerable.Repeat(chars, 8).Select(s => s[random.Next(s.Length)]).ToArray());
-    }
+
 }
 
 
