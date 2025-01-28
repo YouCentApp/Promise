@@ -15,7 +15,7 @@ public class PromiseDb : DbContext
     public DbSet<Rate> Rates { get; set; }
     public DbSet<UserSetting> UserSettings { get; set; }
     public DbSet<PersonalData> PersonalData { get; set; }
-    public DbSet<AccessRestore> AccessRestores { get; set; }
+    public DbSet<AccessRestore> AccessRestore { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
