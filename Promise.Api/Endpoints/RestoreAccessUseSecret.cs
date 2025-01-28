@@ -45,6 +45,15 @@ public static class RestoreAccessUseSecret
             var newPasswordHash = Security.GetPasswordHash(newPassword, user.Salt!);
             user.Password = newPasswordHash;
 
+            var accessRestore = await db.Set<AccessRestore>().FirstOrDefaultAsync(ar => ar.UserId == user.Id);
+            if (accessRestore != null)
+            {
+                accessRestore.UseSecretTryNumber = 0;
+                accessRestore.UseEmailTryNumber = 0;
+                accessRestore.UseTelTryNumber = 0;
+                db.Set<AccessRestore>().Update(accessRestore);
+            }
+
             db.Users.Update(user);
             await db.SaveChangesAsync();
 
@@ -60,17 +69,26 @@ public static class RestoreAccessUseSecret
 
     private static async Task TrackFailedAttempt(PromiseDb db, long userId)
     {
-        var attempt = new AccessRestore
+        var accessRestore = await db.Set<AccessRestore>().FirstOrDefaultAsync(ar => ar.UserId == userId);
+        if (accessRestore == null)
         {
-            UserId = userId,
-            UseSecretTryDate = DateTime.UtcNow,
-            UseSecretTryNumber = 1
-        };
-        db.Set<AccessRestore>().Add(attempt);
+            accessRestore = new AccessRestore
+            {
+                UserId = userId,
+                UseSecretTryDate = DateTime.UtcNow,
+                UseSecretTryNumber = 1
+            };
+            db.Set<AccessRestore>().Add(accessRestore);
+        }
+        else
+        {
+            accessRestore.UseSecretTryNumber++;
+            accessRestore.UseSecretTryDate = DateTime.UtcNow;
+            db.Set<AccessRestore>().Update(accessRestore);
+        }
         await db.SaveChangesAsync();
 
-        var attempts = await db.Set<AccessRestore>().Where(ar => ar.UserId == userId).ToListAsync();
-        if (attempts.Count >= 3)
+        if (accessRestore.UseSecretTryNumber >= 3)
         {
             errorReason = "You have reached the maximum number of attempts. Please contact us or use other way to restore access.";
             throw new InvalidOperationException("Maximum number of attempts reached for user ID: " + userId);
