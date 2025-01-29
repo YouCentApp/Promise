@@ -1,0 +1,111 @@
+﻿@page "/restoreaccessuseemail"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+@inject AppState appState
+@inject NavigationManager navigationManager
+@inject ISettings settings
+
+<h1>Restore Access Using Email</h1>
+
+<p>Please enter your username and the email address you saved previously</p>
+<br>
+
+<div class="form-group col-md-6">
+    <label for="username">Username:</label>
+    <input type="text" id="username" class="form-control" @bind="username" />
+</div>
+<div class="form-group col-md-6">
+    <label for="email">Email:</label>
+    <input type="email" id="email" class="form-control" @bind="email" />
+</div>
+<br>
+<div class="form-group col-md-12">
+    <button type="button" class="btn btn-primary" @onclick="RestoreAccessAsync">Restore Access</button>
+</div>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <br>
+    <br>
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <br>
+    <br>
+    <div class="alert alert-success" role="alert">
+        @successMessage
+    </div>
+}
+
+@code {
+    private string? username;
+    private string? email;
+    private string? errorMessage;
+    private string? successMessage;
+    private string? maskedEmail;
+    private int maxAttempts = 3;
+    private string api => settings.ApiUrl;
+
+    private async Task RestoreAccessAsync()
+    {
+        errorMessage = null;
+        successMessage = null;
+        maskedEmail = null;
+
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email))
+        {
+            errorMessage = "Username and email are required.";
+            return;
+        }
+
+        try
+        {
+            using var httpClient = new HttpClient();
+            var requestData = new RestoreAccessInfo
+                {
+                    Username = username,
+                    UseData = email
+                };
+            var content = new StringContent(JsonSerializer.Serialize(requestData), Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PutAsync($"{api}/restoreaccessuseemail", content);
+            var responseObject = await response.Content.ReadFromJsonAsync<ApiResponseUserAccessRestore>();
+
+            if (response.IsSuccessStatusCode)
+            {
+                if (responseObject is not null && responseObject.Success)
+                {
+                    successMessage = "A temporary password has been sent to your email address.";
+                }
+                else
+                {
+                    if (responseObject?.MaskedEmail != null)
+                    {
+                        errorMessage = "Incorrect email address. Hint: " + responseObject.MaskedEmail;
+                    }
+                    else
+                    {
+                        errorMessage = "Sorry, something went wrong. Please try again later. Possible reason: "
+                        + responseObject?.Error ?? "Unknown error...";
+                    }
+                }
+            }
+            else
+            {
+                errorMessage = "An error occurred while restoring access. Possible reason: "
+                + responseObject?.Error ?? "Unknown error...";
+            }
+        }
+        catch (Exception ex)
+        {
+            MainLogger.LogError($"An error occurred while restoring access. Username: {username}. Exception: {ex.Message}");
+            errorMessage = "An error occurred while restoring access.";
+        }
+    }
+}
+

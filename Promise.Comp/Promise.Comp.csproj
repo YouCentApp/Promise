@@ -28,5 +28,11 @@
     <_ContentIncludedByDefault Remove="Components/Pages/Profile.razor" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Components\Pages\RestoreAccess\RestoreAccessUseEmail.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
 
 </Project>
