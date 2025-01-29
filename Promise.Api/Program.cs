@@ -150,5 +150,13 @@ app.MapPut("/restoreaccessusesecret", async (HttpContext context) =>
 .Accepts<RestoreAccessInfo>("application/json", "Data for restoring access using secret word")
 .WithOpenApi();
 
+// RestoreAccessUseEmail endpoint
+app.MapPut("/restoreaccessuseemail", async (HttpContext context) =>
+{
+    return await RestoreAccessUseEmail.Run(context);
+})
+.Accepts<RestoreAccessInfo>("application/json", "Data for restoring access using email")
+.WithOpenApi();
+
 // RUN!
 app.Run();
