@@ -51,6 +51,9 @@ public static class RestoreAccessUseSecret
                 accessRestore.UseSecretTryNumber = 0;
                 accessRestore.UseEmailTryNumber = 0;
                 accessRestore.UseTelTryNumber = 0;
+                accessRestore.UseSecretTryDate = null;
+                accessRestore.UseEmailTryDate = null;
+                accessRestore.UseTelTryDate = null;
                 db.Set<AccessRestore>().Update(accessRestore);
             }
 
