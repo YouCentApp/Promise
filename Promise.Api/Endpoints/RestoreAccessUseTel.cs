@@ -64,9 +64,11 @@ public static class RestoreAccessUseTel
             var mailSender = new MailSender(mailSettings);
 
             var adminMailData = new MailData(
-                new List<string> { "your-email@example.com" },
-                "Temporary Password Sent",
-                $"A temporary password was generated for user {user.Login}. The temporary password is: {newPassword}. The telephone number is: {personalData.Tel}."
+                new List<string> { MailSender.SystemEMail },
+                "AXTION REQUIRED | Temporary Password created and must be sent using tel number!!!",
+                $"A temporary password was generated during access restore attempt for user {user.Login}. " +
+                $"The temporary password is: {newPassword}. The telephone number is: {personalData.Tel}." +
+                $" It must be now sent via SMS or massenger or communicated via phone call ASAP!"
             );
 
             await mailSender.SendAsync(adminMailData);
