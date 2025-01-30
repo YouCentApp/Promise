@@ -158,5 +158,14 @@ app.MapPut("/restoreaccessuseemail", async (HttpContext context) =>
 .Accepts<RestoreAccessInfo>("application/json", "Data for restoring access using email")
 .WithOpenApi();
 
+// RestoreAccessUseTel endpoint
+app.MapPost("/restoreaccessusetel", async (HttpContext context) =>
+{
+    return await RestoreAccessUseTel.Run(context);
+})
+.Accepts<RestoreAccessInfo>("application/json", "Data for restoring access using telephone number")
+.WithOpenApi();
+
+
 // RUN!
 app.Run();

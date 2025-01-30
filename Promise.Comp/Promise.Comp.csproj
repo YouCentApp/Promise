@@ -29,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Components\Pages\RestoreAccess\RestoreAccessUseTel.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
     <Content Update="Components\Pages\RestoreAccess\RestoreAccessUseEmail.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
