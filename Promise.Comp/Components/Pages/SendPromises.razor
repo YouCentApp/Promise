@@ -14,22 +14,22 @@
 
 <div class="form-group col-md-6">
     <label for="cents">Amount in YouCent Promises (YCP):</label>
-    <input type="text" class="form-control" @bind="cents" placeholder="0" />
+    <input type="text" id="cents" class="form-control" @bind="cents" placeholder="0" />
 </div>
 <br>
 <div class="form-group col-md-6">
     <label for="beneficiary">Beneficiary:</label>
-    <input type="text" class="form-control" @bind="beneficiary" placeholder="Enter Username" />
+    <input type="text" id="beneficiary" class="form-control" @bind="beneficiary" placeholder="Enter Username" />
 </div>
 <br>
 <div class="form-group col-md-6">
-    <label for="beneficiary">Memo:</label>
-    <input type="text" class="form-control" @bind="memo" placeholder="Enter optional message about transaction" />
+    <label for="memo">Memo:</label>
+    <input type="text" id="memo" class="form-control" @bind="memo" placeholder="Enter optional message about transaction" />
 </div>
 <br>
 <div class="form-group col-md-6">
     <label for="password">Password:</label>
-    <input type="password" class="form-control" @bind="password" placeholder="Enter your password for confirmation" />
+    <input type="password" id="password" class="form-control" @bind="password" placeholder="Enter your password for confirmation" />
 </div>
 <br>
 <button type="button" class="btn btn-primary" @onclick="SendPrommisesAsync">Send Promises</button>

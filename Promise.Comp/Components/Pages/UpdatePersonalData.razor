@@ -18,12 +18,12 @@
 <div>
     <div class="form-group col-md-6">
         <input type="checkbox" @bind="isEmailEnabled" /> <label for="email">Email</label>
-        <input type="email" class="form-control" placeholder="Enter email" @bind="email"
+        <input type="email" id="email" class="form-control" placeholder="Enter email" @bind="email"
         disabled="@(!isEmailEnabled)" />
         <br>
     </div>
     <div class="form-group col-md-6">
-        <input type="checkbox" @bind="isTelephoneEnabled" /> <label for="telephone">Telephone</label>
+        <input type="checkbox" @bind="isTelephoneEnabled" /> <label for="tel">Telephone</label>
         <div class="d-flex">
             <select class="form-control me-2" @bind="selectedCountryCode" disabled="@(!isTelephoneEnabled)">
                 <option value="">Chose Country Code</option>
@@ -32,14 +32,14 @@
                     <option value="+@country.Code">@country.Name (+@country.Code)</option>
                 }
             </select>
-            <input type="tel" class="form-control" placeholder="Enter telephone" @bind="telephone"
+            <input type="tel" id="tel" class="form-control" placeholder="Enter telephone" @bind="telephone"
             disabled="@(!isTelephoneEnabled)" />
         </div>
         <br>
     </div>
     <div class="form-group col-md-6">
-        <input type="checkbox" @bind="isSecretWordEnabled" /> <label for="secretWord">Secret Word</label>
-        <input type="password" class="form-control" placeholder="Enter secret word" @bind="secretWord"
+        <input type="checkbox" @bind="isSecretWordEnabled" /> <label for="secret">Secret Word</label>
+        <input type="password" id="secret" class="form-control" placeholder="Enter secret word" @bind="secretWord"
         disabled="@(!isSecretWordEnabled)" />
         <br>
     </div>

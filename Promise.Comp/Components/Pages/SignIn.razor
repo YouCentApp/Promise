@@ -17,12 +17,12 @@
 <div class="container">
     <div class="form-group col-md-6">
         <label for="username">Username:</label>
-        <input type="text" class="form-control" @bind="username" />
+        <input type="text" id="username" class="form-control" @bind="username" />
     </div>
     <br>
     <div class="form-group col-md-6">
         <label for="password">Password:</label>
-        <input type="password" class="form-control" @bind="password" />
+        <input type="password" id="password" class="form-control" @bind="password" />
     </div>
     <br>
     <button class="btn btn-primary" @onclick="TrySignInAsync">Sign in</button>
