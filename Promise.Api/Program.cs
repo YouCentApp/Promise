@@ -60,7 +60,7 @@ string? jwtSecret = configuration["Jwt:Secret"];
 // MinVerSup endpoint. It checks if the version of the APP is supported.
 app.MapGet("/minversup", () =>
 {
-    return new { major = 2, minor = 0, build = 3 };
+    return new { major = 2, minor = 0, build = 10 };
 })
 .WithOpenApi();
 

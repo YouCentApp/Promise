@@ -29,8 +29,8 @@
         <ApplicationId>app.YouCent</ApplicationId>
 
         <!-- Versions -->
-        <ApplicationDisplayVersion>2.0.3</ApplicationDisplayVersion>
-        <ApplicationVersion>49</ApplicationVersion>
+        <ApplicationDisplayVersion>2.0.11</ApplicationDisplayVersion>
+        <ApplicationVersion>50</ApplicationVersion>
 
 		<WindowsPackageType>MSIX</WindowsPackageType>
 

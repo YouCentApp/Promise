@@ -1,16 +1,31 @@
+using Microsoft.Maui.Controls;
+
 namespace Promise.Native;
 
 public partial class UpdateApp : ContentPage
 {
-	public UpdateApp()
+	private readonly AppState _appState;
+
+	public UpdateApp(AppState appState)
 	{
 		InitializeComponent();
+		_appState = appState;
+	}
+
+	protected override bool OnBackButtonPressed()
+	{
+		// If an update is required, prevent going back
+		if (_appState.IsUpdateRequired)
+		{
+			return true; // Consume the back button press
+		}
+		
+		return base.OnBackButtonPressed();
 	}
 
 	private async void UpdateForAndroid(object sender, EventArgs e)
 	{
 		await Launcher.OpenAsync(new Uri("https://play.google.com/store/apps/details?id=app.YouCent"));
-
 	}
 
 	private async void UpdateForiOS(object sender, EventArgs e)
@@ -39,6 +54,4 @@ public partial class UpdateApp : ContentPage
 	{
 		await Launcher.OpenAsync(new Uri("https://youcent.app"));
 	}
-
-
 }
