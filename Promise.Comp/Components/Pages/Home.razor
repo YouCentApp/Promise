@@ -7,6 +7,7 @@
 @inject NavigationManager navigationManager
 @inject IMyEnvironment myEnvironment
 @inject ISettings settings
+@inject INavigationManager navigationManagerCrossplatform
 
 <h1>Welcome to YouCent App 2.0</h1>
 
@@ -50,13 +51,13 @@
             <p>YouCent is a fun and easy to understand FinTech project! Here you buy and sell using promises instead of money. We call them YouCent Promises (YCP).</p>
             <p>You are simply making promises instead of spending money. Then you pay back by providing services or goods back to community and get your promised cents back the same way!</p>
             <p>In fact, these cents are even more real than money because every product and service is produced by people like you. Therefore, you create your cents by promising and keeping your promises of course ;)</p>
-            <p>Good and honest people should be always trusted with promising something to be produced or done in future in return of getting something here and now. YouCent helps these people to track those mutual promises (aka “I Owe You Documents”) as digital transactions. We try our best to follow the laws regarding IOU documents exchange by facilitating secure ledger to track the records.</p>
+            <p>Good and honest people should be always trusted with promising something to be produced or done in future in return of getting something here and now. YouCent helps these people to track those mutual promises (aka "I Owe You Documents") as digital transactions. We try our best to follow the laws regarding IOU documents exchange by facilitating secure ledger to track the records.</p>
             <p>No currency (including crypto, fiat or any other form) is needed or used in the system to buy or sell YouCent Promises. YouCent is closed nonmonetary project. The virtual exchange rate of YouCent Promise is fixed and equals 100 YCP for 1 USD now. Even though YouCent does not trade Promises for money if the law of the country the YouCent user resides in, does not prohibit to buy, or sell IOU documents, then the users can sell or buy YouCent Promises as they wish.</p>
             <p>Still YouCent does not recommend exchanging promises for money. The exchange rate only helps to evaluate prices in money equivalent. However, if you still decide to sell or buy YCP, then we recommend sticking to this fixed rate of 100 YCP = 1 USD in any circumstances.</p>
             <p>YouCent does not charge for transactions or any other interactions with our apps and services. The only cost of using YouCent could be is an optional annual fee of any amount you choose. By doing this user gets the specific Promise Limit which makes it possible to send Promises even with zero or negative balance. Those fees also play a role of simple, yet robust anti-fraud mechanism.</p>
             <p>For those users who only plan to spend Promises they already received from others, the YouCent system is always free to use.</p>
             <p>We don't want to give a chance for some dishonest people to misuse YouCent by only spending and never give anything back to community. Therefore, every user's goal should be to keep their balance as close to zero as possible at any given time.</p>
-            <p>Our mission is to help people exchange great goods and services - not to “make money” or worse to make debts which they never pay back. Please respect each other and welcome aboard!</p>
+            <p>Our mission is to help people exchange great goods and services - not to "make money" or worse to make debts which they never pay back. Please respect each other and welcome aboard!</p>
         </div>
     </div>
 </div>
@@ -118,6 +119,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        // Check if app update is required
+        if (myEnvironment.IsNative() && appState.IsUpdateRequired && navigationManagerCrossplatform != null)
+        {
+            await navigationManagerCrossplatform.NavigateToAsync("///UpdateApp");
+            return;
+        }
+
         isSignedIn = appState.IsSignedIn;
         if (isSignedIn)
         {
@@ -141,6 +149,11 @@
         if (appState.IsCutOff)
         {
             navigationManager.NavigateTo("/cutoff");
+        }
+        // Also check for required updates
+        if (myEnvironment.IsNative() && appState.IsUpdateRequired && firstRender)
+        {
+            Task.Run(async () => await navigationManagerCrossplatform.NavigateToAsync("///UpdateApp"));
         }
     }
 

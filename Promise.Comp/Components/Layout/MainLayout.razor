@@ -40,6 +40,13 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // If update is required, don't allow anything else to happen
+        if (appState.IsUpdateRequired)
+        {
+            await navigationManagerCrossplatform.NavigateToAsync("UpdateApp");
+            return;
+        }
+
         if (firstRender)
         {
             if (myEnvironment.IsNative())
@@ -55,7 +62,10 @@
                     appState.IsCutOff = false;
                     if (await CheckIfNativeAppMustBeUpdated())
                     {
+                        // Set the flag that an update is required
+                        appState.IsUpdateRequired = true;
                         await navigationManagerCrossplatform.NavigateToAsync("UpdateApp");
+                        return;
                     }
                 }
             }
@@ -95,7 +105,12 @@
             if (response.IsSuccessStatusCode)
             {
                 var minimumVersion = await response.Content.ReadFromJsonAsync<AppMinimumVersion>();
-                if (minimumVersion is not null)
+                
+                // Make sure we have valid version data before comparing
+                if (minimumVersion is not null && 
+                    minimumVersion.Major >= 0 && 
+                    minimumVersion.Minor >= 0 && 
+                    minimumVersion.Build >= 0)
                 {
                     // Compare the current version with the minimum supported version
                     if (currentVersion.Major < minimumVersion.Major ||
@@ -105,6 +120,11 @@
                     {
                         return true; // App must be updated
                     }
+                }
+                else
+                {
+                    // Log if we received invalid version data
+                    MainLogger.LogError("Received invalid minimum version data from API");
                 }
             }
             else
@@ -121,8 +141,6 @@
             MainLogger.LogError("Unexpected error while checking app version: " + ex.Message);
         }
 
-        return false; // App does not need to be updated
+        return false; // App does not need to be updated by default
     }
-
-
 }

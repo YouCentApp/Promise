@@ -7,6 +7,8 @@
     public bool IsSignedInChecked { get; set; }
 
     public bool IsCutOff { get; set; }
+    
+    public bool IsUpdateRequired { get; set; }
 
     public long UserId { get; set; }
 

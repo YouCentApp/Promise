@@ -10,7 +10,11 @@
         Title="YouCent App"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage"/>
-
-
+        
+    <!-- Making update page directly accessible at root level -->
+    <ShellContent
+        Title="Update App"
+        ContentTemplate="{DataTemplate local:UpdateApp}"
+        Route="UpdateApp" />
 
 </Shell>
